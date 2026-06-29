@@ -1,4 +1,15 @@
-<script>
+'use client';
+import React, { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+
+export default function Portfolio() {
+  const container = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    window.gsap = gsap;
+    let ctx = gsap.context(() => {
+      try {
+        
 const PHOTOS = [
   {id:"p1",src:"https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32547a0be6c9f95b9414d7_1.png",images:["https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32547a0be6c9f95b9414d7_1.png","https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32547cd450f2e5c62aadc0_2.png","https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a3254798052b337ca27138f_3.png","https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32547ce557403980ddc0f9_4.png","https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32547c8052b337ca271486_5.png","https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32547c37065b8b0455fc48_6.png"],title:"Client Management",cat:"saas",year:"2024",role:"SaaS Product Design / UX Strategy",tags:["Dashboard Design","CRM Design","Design System","Figma"],overview:"A client management platform designed to help service businesses track relationships, tasks, and communications in one unified place. The challenge was reducing cognitive load across a data-heavy interface without losing depth.",process:"We mapped the core user journey from lead to active client, identifying where friction caused drop-off. Information architecture was restructured around the most frequent actions rather than database categories.",outcome:"A clean, actionable dashboard with role-based views, an activity timeline, and a smart filter system — all shipped within a single design engagement.",lx:4,ly:12,lw:22,ar:"16/10"},
   {id:"p2",src:"https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32548ddc4295c73da78df3_1.png",images:["https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32548ddc4295c73da78df3_1.png","https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32548b4d2a85af0bc22998_2.png","https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32548c795b1b6915f0e8e9_3.png","https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32548d3f505cd8385415e4_4.png","https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32548dd450f2e5c62ab817_5.png","https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32548e37065b8b0456041d_6.png"],title:"E-Wallet",cat:"product",year:"2024",role:"Product Design / Mobile UX",tags:["Mobile App","Fintech","Interaction Design","Prototyping"],overview:"A mobile e-wallet designed for everyday transactions — from peer-to-peer transfers to bill payments. The goal was to make financial actions feel fast and trustworthy without overwhelming the user.",process:"We conducted usability research with first-time digital wallet users to understand trust barriers. Every flow was stripped back to the minimum steps required to complete a transaction.",outcome:"A clean, gesture-driven interface with real-time balance feedback, one-tap transfers, and a transaction history that surfaces what matters most.",lx:30,ly:8,lw:18,ar:"9/16"},
@@ -706,4 +717,106 @@ const outroStart = (CANVAS_VW - 102) * vw / 100;
     .to(['#h-progress'],{autoAlpha:1,duration:0.5},'lift+=0.68')
     .call(()=>revealCanvas(),[],  'lift+=0.48');
 })();
-</script>
+
+      } catch(e) { console.error("Script Error:", e); }
+    }, container);
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <div ref={container} dangerouslySetInnerHTML={{ __html: `<div id="loader">
+    <div id="ldr-wordmark"><span id="ldr-wordmark-inner">AK — Portfolio</span></div>
+  <div id="ldr-body">
+  <div class="ldr-line" id="ldr-line-wrap"></div>
+  <div id="ldr-sub" style="overflow:hidden;margin-top:14px;">
+    <div id="ldr-sub-wrap" style="display:flex;gap:0.18em;justify-content:center;"></div>
+  </div>
+</div>
+    
+    <div id="ldr-bottom">
+      <div id="ldr-location"><span id="ldr-location-inner">Bombay, India</span></div>
+      <div id="ldr-pct-wrap"><span id="ldr-pct">0%</span></div>
+    </div>
+  </div>
+
+  <div class="grid-bg" id="home-grid-bg"></div>
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+  <div id="cursor-coords"></div>
+
+  <!-- ── NAV: [About][Case studies] | ATHARV | [Resume][Contact] ── -->
+  <nav id="main-nav">
+    <div class="nav-left">
+      <button class="nav-item" id="nav-about-btn">[About]</button>
+      <button class="nav-item" id="nav-casestudy-btn">[Case studies]</button>
+    </div>
+    <a href="#" class="nav-logo">ATHARV</a>
+    <div class="nav-right">
+      <a href="https://drive.google.com/file/d/1breHhutnikcF8RlMtDVYWgE5Oh_5RH3O/view?usp=sharing" class="nav-item" id="nav-resume-btn" target="">[Resume]</a>
+      <button class="nav-item" id="nav-contact-btn" onclick="window.location='mailto:hello@atharvk.com'">[Contact]</button>
+    </div>
+    <span class="nav-item" id="nav-proj-title"></span>
+  </nav>
+
+  <div id="social-links">
+    <a class="social-link" href="#" target="_blank">Instagram</a>
+    <a class="social-link" href="#" target="_blank">Behance</a>
+    <a class="social-link" href="#" target="_blank">LinkedIn</a>
+    <a class="social-link" href="#" target="_blank">Twitter</a>
+  </div>
+
+  <div id="bottom-right">
+    <div class="filter-col" id="filter-col">
+      <button class="cat-btn" data-cat="brand">Brand Identity</button>
+      <button class="cat-btn" data-cat="landing">Landing Page</button>
+      <button class="cat-btn" data-cat="graphic">Graphic Design</button>
+      <button class="cat-btn" data-cat="app">App Design</button>
+      <button class="cat-btn" data-cat="packaging">Packaging</button>
+      <button class="cat-btn" data-cat="saas">SaaS Design</button>
+      <button class="cat-btn" data-cat="product">Product Design</button>
+    </div>
+    <div class="filter-toggle-wrap">
+      <button id="filter-toggle-btn">[FILTER]</button>
+    </div>
+  </div>
+
+  <div id="h-progress"><div id="h-progress-bar"></div></div>
+  <div id="canvas"><div id="stage"></div></div>
+  <canvas id="glcanvas"></canvas>
+
+  <div id="project-view">
+    <div id="proj-nav-spacer"></div>
+    <div id="proj-marquee-section">
+      <div id="proj-marquee-strip"></div>
+    </div>
+    <div id="proj-content"></div>
+  </div>
+
+  <div id="about-overlay">
+    <button id="about-close-x">[CLOSE]</button>
+    <div class="about-headline-block">
+      <h1 class="about-headline">
+        <em>Hello,</em> My name is Atharv. I am a Product designer<br>
+        Based in <em>*BOMBAY</em>,<br>
+        with a passion for exploration.<br>
+        Multi&#8202;&mdash;&#8202;Disciplinary.<br>
+        Currently designing @<br>
+        <span class="hl-link"><span class="hl-arrow">&#8599;</span>kraftelite</span>
+      </h1>
+    </div>
+    <div class="about-body-block">
+      <p id="about-bio-1"></p>
+      <p id="about-bio-2"></p>
+    </div>
+    <div class="about-photo-block">
+      <img class="about-photo"
+        src="https://raw.githubusercontent.com/ProductDesigner-Ath/Protfolio/9188cd54b642b0a987b8061805cc9275672e3073/images/Upscale-me.png"
+        alt="Atharv Kelwadkar"/>
+    </div>
+    <div class="about-footnote">
+      * Synthesist&thinsp;/&thinsp;sin-thuh-sist/<br>
+      means <em>one who turns complexity into clarity</em>.
+    </div>
+  </div>` }} />
+  );
+}
