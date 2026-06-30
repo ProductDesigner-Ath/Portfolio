@@ -35,7 +35,8 @@ function getPhotoScale(){
 
 // ── FIX 2: canvas width tightened to eliminate empty space after last project ──
 const CANVAS_VW = 340;
-const stage = document.getElementById('stage');
+const stage = document.getElementById('stage')!;
+if (!stage) return;
 if(!isMobileView){
   stage.style.width = CANVAS_VW + 'vw';
 }
@@ -55,8 +56,8 @@ introScreen.innerHTML = `
 `;
 stage.insertBefore(introScreen, stage.firstChild);
 
-const photoEls = {};
-let mobileGridEl = null;
+const photoEls: Record<string, { el: HTMLDivElement; p: any }> = {};
+let mobileGridEl: HTMLDivElement | null = null;
 
 if(isMobileView){
   mobileGridEl = document.createElement('div');
@@ -72,10 +73,14 @@ if(isMobileView){
         <span class="mobile-title">${p.title}</span>
         <span class="mobile-meta">[${p.year}]&nbsp;&nbsp;[${p.cat}]</span>
       </div>`;
-    mobileGridEl.appendChild(el);
+    if (mobileGridEl) {
+      mobileGridEl.appendChild(el);
+    }
     photoEls[p.id] = {el, p};
   });
-  stage.appendChild(mobileGridEl); // sits right after intro-screen, before outro
+  if (mobileGridEl) {
+    stage.appendChild(mobileGridEl); // sits right after intro-screen, before outro
+  }
 } else {
   const s = getPhotoScale();
   PHOTOS.forEach((p,i) => {
@@ -127,9 +132,14 @@ if(isMobileView){
 }
 
 /* WEBGL CLOTH DISTORTION */
-const glCanvas = document.getElementById('glcanvas');
-const gl = glCanvas.getContext('webgl', {alpha:true, premultipliedAlpha:false});
-function resizeGL(){glCanvas.width=window.innerWidth;glCanvas.height=window.innerHeight;if(gl)gl.viewport(0,0,glCanvas.width,glCanvas.height);}
+const glCanvas = document.getElementById('glcanvas') as HTMLCanvasElement | null;
+const gl = glCanvas?.getContext('webgl', {alpha:true, premultipliedAlpha:false}) ?? null;
+function resizeGL(){
+  if (!glCanvas) return;
+  glCanvas.width=window.innerWidth;
+  glCanvas.height=window.innerHeight;
+  if(gl) gl.viewport(0,0,glCanvas.width,glCanvas.height);
+}
 resizeGL();
 window.addEventListener('resize',resizeGL);
 
@@ -158,15 +168,45 @@ const FRAG_SRC=`
     gl_FragColor=vec4(r,g,b,uAlpha);
   }`;
 
-function compileShader(t,s){const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);return sh;}
-function mkProg(v,f){const p=gl.createProgram();gl.attachShader(p,compileShader(gl.VERTEX_SHADER,v));gl.attachShader(p,compileShader(gl.FRAGMENT_SHADER,f));gl.linkProgram(p);return p;}
+function compileShader(t: number, s: string) {
+  if (!gl) return null;
+  const sh = gl.createShader(t);
+  if (!sh) return null;
+  gl.shaderSource(sh, s);
+  gl.compileShader(sh);
+  return sh;
+}
+function mkProg(v: string, f: string) {
+  if (!gl) return null;
+  const p = gl.createProgram();
+  if (!p) return null;
+  const vertShader = compileShader(gl.VERTEX_SHADER, v);
+  const fragShader = compileShader(gl.FRAGMENT_SHADER, f);
+  if (!vertShader || !fragShader) return null;
+  gl.attachShader(p, vertShader);
+  gl.attachShader(p, fragShader);
+  gl.linkProgram(p);
+  return p;
+}
 
-let glReady=false,glProg,aPos_loc,aUV_loc,uOffset_loc,uPos_loc,uSize_loc,uRes_loc,uAlpha_loc,uTex_loc;
-let quadVBO,uvVBO,indexBuf;
+let glReady=false;
+let glProg: WebGLProgram | null = null;
+let aPos_loc: number = -1;
+let aUV_loc: number = -1;
+let uOffset_loc: WebGLUniformLocation | null = null;
+let uPos_loc: WebGLUniformLocation | null = null;
+let uSize_loc: WebGLUniformLocation | null = null;
+let uRes_loc: WebGLUniformLocation | null = null;
+let uAlpha_loc: WebGLUniformLocation | null = null;
+let uTex_loc: WebGLUniformLocation | null = null;
+let quadVBO: WebGLBuffer | null = null;
+let uvVBO: WebGLBuffer | null = null;
+let indexBuf: WebGLBuffer | null = null;
 
 function initGL(){
   if(!gl)return;
   glProg=mkProg(VERT_SRC,FRAG_SRC);
+  if (!glProg) return;
   aPos_loc=gl.getAttribLocation(glProg,'aPos');
   aUV_loc=gl.getAttribLocation(glProg,'aUV');
   uOffset_loc=gl.getUniformLocation(glProg,'uOffset');
@@ -191,9 +231,11 @@ function initGL(){
   glReady=true;
 }
 
-const glMeshes=[];
-function createGLMesh(imgEl){
+const glMeshes: Array<{ imgEl: HTMLImageElement; photoEl: Element | null; tex: WebGLTexture | null; texLoaded: boolean; currentAlpha: number; targetAlpha: number; currentOffX: number; currentOffY: number }> = [];
+function createGLMesh(imgEl: HTMLImageElement){
+  if (!gl) return null;
   const tex=gl.createTexture();
+  if (!tex) return null;
   gl.bindTexture(gl.TEXTURE_2D,tex);
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
@@ -208,8 +250,8 @@ function createGLMesh(imgEl){
 }
 
 const IDX_COUNT=20*20*6;
-function renderGL(scrollVel,isHovering){
-  if(!glReady||!gl)return;
+function renderGL(scrollVel: number, isHovering: boolean){
+  if(!glReady||!gl||!glProg||!glCanvas||!uRes_loc||!uOffset_loc||!uPos_loc||!uSize_loc||!uAlpha_loc||!uTex_loc)return;
   gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
   gl.useProgram(glProg);gl.uniform2f(uRes_loc,glCanvas.width,glCanvas.height);
   gl.bindBuffer(gl.ARRAY_BUFFER,quadVBO);gl.enableVertexAttribArray(aPos_loc);gl.vertexAttribPointer(aPos_loc,2,gl.FLOAT,false,0,0);
@@ -243,6 +285,8 @@ let targetX=0,currentX=0,prevX=0,scrollVel=0;
 const maxX=()=>(CANVAS_VW-100)*window.innerWidth/100;
 const progressOffset=()=>window.innerWidth;
 const hBar=document.getElementById('h-progress-bar');
+const canvasEl=document.getElementById('canvas');
+if(!hBar||!canvasEl)return;
 window.addEventListener('wheel',e=>{
   if(projectOpen||aboutOpen)return;
   e.preventDefault();
@@ -250,17 +294,17 @@ window.addEventListener('wheel',e=>{
 },{passive:false});
 
 let touchStartX=0,touchStartY=0,touchLastX=0,isTouchScrolling=false;
-document.getElementById('canvas').addEventListener('touchstart',e=>{
+canvasEl.addEventListener('touchstart',e=>{
   if(projectOpen||aboutOpen)return;
   touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;touchLastX=touchStartX;isTouchScrolling=false;
 },{passive:true});
-document.getElementById('canvas').addEventListener('touchmove',e=>{
+canvasEl.addEventListener('touchmove',e=>{
   if(projectOpen||aboutOpen)return;
   const dx=touchStartX-e.touches[0].clientX;const dy=touchStartY-e.touches[0].clientY;
   if(!isTouchScrolling && Math.abs(dx)>Math.abs(dy)*0.8) isTouchScrolling=true;
   if(isTouchScrolling){e.preventDefault();const delta=touchLastX-e.touches[0].clientX;targetX=Math.max(0,Math.min(targetX+delta*1.4,maxX()));touchLastX=e.touches[0].clientX;}
 },{passive:false});
-document.getElementById('canvas').addEventListener('touchend',()=>{isTouchScrolling=false;},{passive:true});
+canvasEl.addEventListener('touchend',()=>{isTouchScrolling=false;},{passive:true});
 
 let isHovering=false;
 (function tick(){
@@ -270,7 +314,7 @@ let isHovering=false;
 })();
 
 /* CURSOR */
-const curEl=document.getElementById('cursor'),curRing=document.getElementById('cursor-ring'),curCoords=document.getElementById('cursor-coords');
+const curEl=document.getElementById('cursor')!,curRing=document.getElementById('cursor-ring')!,curCoords=document.getElementById('cursor-coords')!;
 let mx=-200,my=-200,cx=-200,cy=-200,rx=-200,ry=-200;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
 document.addEventListener('mousemove',e=>{
@@ -289,22 +333,22 @@ document.addEventListener('mouseup',()=>document.body.classList.remove('cur-clic
   curCoords.style.left=(cx+14)+'px';curCoords.style.top=(cy-42)+'px';
   requestAnimationFrame(animC);
 })();
-function makeCoord(){const la=(Math.random()*180-90).toFixed(4),lo=(Math.random()*360-180).toFixed(4);return `${Math.abs(la)}°${la>=0?'N':'S'}\n${Math.abs(lo)}°${lo>=0?'E':'W'}`;}
+function makeCoord(){const la=Math.random()*180-90,lo=Math.random()*360-180;return `${Math.abs(la).toFixed(4)} deg ${la>=0?'N':'S'}\n${Math.abs(lo).toFixed(4)} deg ${lo>=0?'E':'W'}`;}
 let coord=makeCoord();
 setInterval(()=>{coord=makeCoord();curCoords.textContent=coord;},820);
 curCoords.textContent=coord;
 
-let hoveredEl=null;
+let hoveredEl: HTMLElement | null=null;
 stage.addEventListener('mouseover',e=>{
-  const photo=e.target.closest('.photo');
+  const photo=(e.target as Element).closest<HTMLElement>('.photo');
   if(!photo||projectOpen||aboutOpen)return;
   if(hoveredEl)hoveredEl.classList.remove('hovered');
   photo.classList.add('hovered');hoveredEl=photo;isHovering=true;
 });
 stage.addEventListener('mouseout',e=>{
-  const photo=e.target.closest('.photo');
+  const photo=(e.target as Element).closest<HTMLElement>('.photo');
   if(!photo)return;
-  if(!e.relatedTarget||!e.relatedTarget.closest('.photo')){if(hoveredEl){hoveredEl.classList.remove('hovered');hoveredEl=null;}isHovering=false;}
+  if(!e.relatedTarget||!(e.relatedTarget as Element).closest('.photo')){if(hoveredEl){hoveredEl.classList.remove('hovered');hoveredEl=null;}isHovering=false;}
 });
 
 let touchTapStartX=0,touchTapStartY=0;
@@ -312,18 +356,24 @@ stage.addEventListener('touchstart',e=>{touchTapStartX=e.touches[0].clientX;touc
 stage.addEventListener('touchend',e=>{
   const dx=Math.abs(e.changedTouches[0].clientX-touchTapStartX);const dy=Math.abs(e.changedTouches[0].clientY-touchTapStartY);
   if(dx>10||dy>10)return;
-  const photo=e.target.closest('.photo');
-  if(photo&&!projectOpen&&!aboutOpen) openProject(photo.dataset.id);
+  const photo=(e.target as Element).closest<HTMLElement>('.photo');
+  if(photo&&!projectOpen&&!aboutOpen) openProject(photo.dataset.id!);
 },{passive:true});
 
 /* TEXT SCRAMBLE */
 class TextScramble{
-  constructor(el){this.el=el;this.chars='!<>—_\\/[]{}=+*^?#@$%&';this.update=this.update.bind(this);}
-  setText(text){
+  el: HTMLElement;
+  chars: string;
+  queue: Array<{to:string;start:number;end:number;char:string}> = [];
+  frame = 0;
+  raf = 0;
+  resolve: () => void = () => {};
+  constructor(el: HTMLElement){this.el=el;this.chars='!<>—_\\/[]{}=+*^?#@$%&';this.update=this.update.bind(this);}
+  setText(text: string){
     this.queue=[];
     for(let i=0;i<text.length;i++){const to=text[i],start=Math.floor(i*1.1),end=start+Math.floor(Math.random()*12)+5;this.queue.push({to,start,end,char:''});}
     this.frame=0;cancelAnimationFrame(this.raf);
-    return new Promise(r=>{this.resolve=r;this.update();});
+    return new Promise<void>(r=>{this.resolve=r;this.update();});
   }
   update(){
     let html='',done=0;
@@ -339,20 +389,20 @@ class TextScramble{
 }
 
 /* PROJECT VIEW */
-const projectView=document.getElementById('project-view');
-const navProjTitle=document.getElementById('nav-proj-title');
-const projMqStrip=document.getElementById('proj-marquee-strip');
-const projContent=document.getElementById('proj-content');
-let mqRAF=null,mqPaused=false,mqPos=0,mqSpeed=0.55,mqFullW=0;
-const CAT_LABELS={brand:'Brand Identity',landing:'Landing Page Design',graphic:'Graphic Design',app:'App Design',packaging:'Packaging Design',saas:'SaaS Design',product:'Product Design'};
+const projectView=document.getElementById('project-view')!;
+const navProjTitle=document.getElementById('nav-proj-title')!;
+const projMqStrip=document.getElementById('proj-marquee-strip')!;
+const projContent=document.getElementById('proj-content')!;
+let mqRAF=0,mqPaused=false,mqPos=0,mqSpeed=0.55,mqFullW=0;
+const CAT_LABELS: Record<string, string>={brand:'Brand Identity',landing:'Landing Page Design',graphic:'Graphic Design',app:'App Design',packaging:'Packaging Design',saas:'SaaS Design',product:'Product Design'};
 
 stage.addEventListener('click',e=>{
-  const photo=e.target.closest('.photo');
+  const photo=(e.target as Element).closest<HTMLElement>('.photo');
   if(!photo||projectOpen||aboutOpen)return;
-  openProject(photo.dataset.id);
+  openProject(photo.dataset.id!);
 });
 
-function openProject(id){
+function openProject(id: string){
   const {p}=photoEls[id];
   projectOpen=true;
   const allPhotos=[...stage.querySelectorAll('.photo')];
@@ -371,23 +421,23 @@ function openProject(id){
   isHovering=false;
 }
 
-function buildProjectView(p){
+function buildProjectView(p: any){
   projMqStrip.innerHTML='';
   projMqStrip.classList.remove('has-hover');
   mqPos=0;mqFullW=0;mqPaused=false;
 
   const stripH=Math.round(Math.min(window.innerHeight*0.62,window.innerHeight-180));
-  const allImgs=p.images;
+  const allImgs=p.images as string[];
 
   // build TWO sets for seamless marquee loop
   function makeSet(){
-    return allImgs.map((src,idx)=>{
+    return allImgs.map((src: string,idx: number)=>{
       const m=src.match(/\/(\d+)\/(\d+)$/);
       const iW=m?parseInt(m[1]):900,iH=m?parseInt(m[2]):675;
       const cardW=Math.round((iW/iH)*stripH);
       const card=document.createElement('div');
       card.className='mq-card';
-      card.dataset.idx=idx;
+      card.dataset.idx=String(idx);
       card.style.cssText=`width:${cardW}px;height:${stripH}px;`;
       card.innerHTML=`<img src="${src}" alt="${p.title} ${idx+1}" draggable="false">`;
       return card;
@@ -415,10 +465,10 @@ requestAnimationFrame(()=>requestAnimationFrame(()=>{
 
   
   // draggable on top of marquee
-  let isDragging=false,dragStartX=0,dragStartPos=0,dragVel=0,lastDragX=0,momentumRAF=null;
-  let resumeTimeout=null;
+  let isDragging=false,dragStartX=0,dragStartPos=0,dragVel=0,lastDragX=0,momentumRAF=0;
+  let resumeTimeout=0;
 
-function applyPos(x){
+function applyPos(x: number){
     if(mqFullW>0){
       while(x<=-mqFullW) x+=mqFullW;
       while(x>0) x-=mqFullW;
@@ -463,7 +513,7 @@ function applyPos(x){
     (function momentum(){
       if(Math.abs(vel)<0.3){
         // resume auto-scroll after 800ms idle
-        resumeTimeout=setTimeout(()=>{mqPaused=false;},800);
+        resumeTimeout=window.setTimeout(()=>{mqPaused=false;},800);
         return;
       }
       applyPos(mqPos+vel);
@@ -491,7 +541,7 @@ function applyPos(x){
     let vel=dragVel;
     (function momentum(){
       if(Math.abs(vel)<0.3){
-        resumeTimeout=setTimeout(()=>{mqPaused=false;},800);
+        resumeTimeout=window.setTimeout(()=>{mqPaused=false;},800);
         return;
       }
       applyPos(mqPos+vel);
@@ -502,21 +552,21 @@ function applyPos(x){
 
   // build text content
   projContent.innerHTML='';
-  const sections=[{label:'Overview',text:p.overview},{label:'Process',text:p.process},{label:'Outcome',text:p.outcome}];
+  const sections: Array<{label:string;text:string}>=[{label:'Overview',text:p.overview},{label:'Process',text:p.process},{label:'Outcome',text:p.outcome}];
   let html=`<div class="proj-meta"><div><div class="proj-meta-title"><span class="proj-meta-title-inner">${p.title}</span></div><div class="proj-role">${p.role}</div></div><div class="proj-meta-right"><div class="proj-meta-year">[${p.year}]</div><div class="proj-meta-cat">${CAT_LABELS[p.cat]||p.cat}</div></div></div>`;
   sections.forEach((s,si)=>{
     html+=`<div class="proj-section" data-delay="${si*90}"><div class="proj-section-label">${s.label}</div><div class="proj-section-body" id="projbody-${si}"></div></div>`;
     if(si<sections.length-1)html+=`<div class="proj-divider" data-delay="${si*90+50}"></div>`;
   });
-  html+=`<div class="proj-section" data-delay="280"><div class="proj-section-label">Deliverables</div><div class="proj-tags">${p.tags.map((t,ti)=>`<span class="proj-tag" data-delay="${300+ti*55}">${t}</span>`).join('')}</div></div>`;
+  html+=`<div class="proj-section" data-delay="280"><div class="proj-section-label">Deliverables</div><div class="proj-tags">${(p.tags as string[]).map((t:string,ti:number)=>`<span class="proj-tag" data-delay="${300+ti*55}">${t}</span>`).join('')}</div></div>`;
   projContent.innerHTML=html;
   sections.forEach((s,si)=>{const el=document.getElementById(`projbody-${si}`);if(el)setTimeout(()=>new TextScramble(el).setText(s.text),600+si*280);});
 }
 
 
 function animateContentIn(){
-  projContent.querySelectorAll('.proj-section,.proj-divider').forEach(el=>{const delay=+(el.dataset.delay||0);setTimeout(()=>el.classList.add('in'),delay+200);});
-  setTimeout(()=>{projContent.querySelectorAll('.proj-tag').forEach(el=>{const delay=+(el.dataset.delay||0);setTimeout(()=>el.classList.add('in'),delay);});},300);
+  projContent.querySelectorAll<HTMLElement>('.proj-section,.proj-divider').forEach(el=>{const delay=+(el.dataset.delay||0);setTimeout(()=>el.classList.add('in'),delay+200);});
+  setTimeout(()=>{projContent.querySelectorAll<HTMLElement>('.proj-tag').forEach(el=>{const delay=+(el.dataset.delay||0);setTimeout(()=>el.classList.add('in'),delay);});},300);
 }
 
 function startMqLoop(){
@@ -544,11 +594,11 @@ function closeProject(){
 }
 
 /* ABOUT */
-const aboutOverlay=document.getElementById('about-overlay');
-const aboutBtn=document.getElementById('nav-about-btn');
-const aboutCloseX=document.getElementById('about-close-x');
-const aboutBio1El=document.getElementById('about-bio-1');
-const aboutBio2El=document.getElementById('about-bio-2');
+const aboutOverlay=document.getElementById('about-overlay')!;
+const aboutBtn=document.getElementById('nav-about-btn')!;
+const aboutCloseX=document.getElementById('about-close-x')!;
+const aboutBio1El=document.getElementById('about-bio-1')!;
+const aboutBio2El=document.getElementById('about-bio-2')!;
 const bioScramble1=new TextScramble(aboutBio1El);
 const bioScramble2=new TextScramble(aboutBio2El);
 const BIO_TEXT_1=`With 8+ years of experience in design, I have worked with both industry-leading web3 projects and consumer startups — across brand identity, SaaS products, landing pages, and mobile apps.`;
@@ -573,10 +623,10 @@ function closeAbout(){
 }
 
 /* FILTER */
-let filterOpen=false,activeCat=null;
-const filterToggleBtn=document.getElementById('filter-toggle-btn');
-const filterCol=document.getElementById('filter-col');
-const catBtns=[...document.querySelectorAll('.cat-btn')];
+let filterOpen=false,activeCat: string | null=null;
+const filterToggleBtn=document.getElementById('filter-toggle-btn')!;
+const filterCol=document.getElementById('filter-col')!;
+const catBtns=[...document.querySelectorAll<HTMLElement>('.cat-btn')];
 filterToggleBtn.addEventListener('click',()=>{
   filterOpen=!filterOpen;
   filterToggleBtn.classList.toggle('is-open',filterOpen);
@@ -586,13 +636,14 @@ filterToggleBtn.addEventListener('click',()=>{
 catBtns.forEach(btn=>{
   btn.addEventListener('click',()=>{
     const cat=btn.dataset.cat;
-    if(activeCat===cat){activeCat=null;btn.classList.remove('active');filterCol.classList.remove('has-active');stage.querySelectorAll('.photo').forEach(el=>el.classList.remove('cat-hidden'));}
-    else{activeCat=cat;catBtns.forEach(b=>b.classList.remove('active'));btn.classList.add('active');filterCol.classList.add('has-active');stage.querySelectorAll('.photo').forEach(el=>{el.classList.toggle('cat-hidden',el.dataset.cat!==cat);});}
+    if(!cat)return;
+    if(activeCat===cat){activeCat=null;btn.classList.remove('active');filterCol.classList.remove('has-active');stage.querySelectorAll<HTMLElement>('.photo').forEach(el=>el.classList.remove('cat-hidden'));}
+    else{activeCat=cat;catBtns.forEach(b=>b.classList.remove('active'));btn.classList.add('active');filterCol.classList.add('has-active');stage.querySelectorAll<HTMLElement>('.photo').forEach(el=>{el.classList.toggle('cat-hidden',el.dataset.cat!==cat);});}
   });
 });
 
 /* [Case studies] btn — scroll to first project */
-document.getElementById('nav-casestudy-btn').addEventListener('click',()=>{
+document.getElementById('nav-casestudy-btn')!.addEventListener('click',()=>{
   if(projectOpen||aboutOpen)return;
   targetX = Math.min(window.innerWidth * 1.05, maxX());
 });
@@ -610,14 +661,14 @@ document.addEventListener('keydown',e=>{
 function revealCanvas(){
   if(!isMobileView){ initGL(); }
   setTimeout(()=>{
-    document.getElementById('intro-image-wrap').classList.add('revealed');
-    setTimeout(()=>{document.getElementById('intro-svg-wrap').classList.add('revealed');document.getElementById('intro-hint').classList.add('revealed');},320);
+    document.getElementById('intro-image-wrap')!.classList.add('revealed');
+    setTimeout(()=>{document.getElementById('intro-svg-wrap')!.classList.add('revealed');document.getElementById('intro-hint')!.classList.add('revealed');},320);
   },80);
   Object.values(photoEls).forEach(({el},i)=>setTimeout(()=>gsap.to(el,{opacity:1,duration:0.6,ease:'power2.out'}),i*65));
 
   if(isMobileView){
-    const filterEl = document.getElementById('bottom-right');
-    const socialEl = document.getElementById('social-links');
+    const filterEl = document.getElementById('bottom-right')!;
+    const socialEl = document.getElementById('social-links')!;
     filterEl.classList.add('hidden');
     socialEl.classList.add('hidden');
 
@@ -634,12 +685,12 @@ function revealCanvas(){
     return; // grid scrolls natively — skip GL meshes + desktop zone logic entirely
   }
 
-  setTimeout(()=>document.querySelectorAll('.photo img').forEach(img=>createGLMesh(img)),200);
+  setTimeout(()=>document.querySelectorAll<HTMLImageElement>('.photo img').forEach(img=>createGLMesh(img)),200);
 
-  const socialEl = document.getElementById('social-links');
-  const filterEl = document.getElementById('bottom-right');
-  const outroEl  = document.getElementById('outro-screen');
-  const contactEl= document.getElementById('outro-contact');
+  const socialEl = document.getElementById('social-links')!;
+  const filterEl = document.getElementById('bottom-right')!;
+  const outroEl  = document.getElementById('outro-screen')!;
+  const contactEl= document.getElementById('outro-contact')!;
 
   function updateZones(){
     const vw = window.innerWidth;
@@ -672,13 +723,13 @@ const outroStart = (CANVAS_VW - 102) * vw / 100;
 /* LOADER */
 (function initLoader(){
   gsap.set(['nav','#social-links','#h-progress'],{autoAlpha:0});
-  const wordmarkInner=document.getElementById('ldr-wordmark-inner');
-  const locationInner=document.getElementById('ldr-location-inner');
-  const pctEl=document.getElementById('ldr-pct');
-  const loaderEl=document.getElementById('loader');
+  const wordmarkInner=document.getElementById('ldr-wordmark-inner')!;
+  const locationInner=document.getElementById('ldr-location-inner')!;
+  const pctEl=document.getElementById('ldr-pct')!;
+  const loaderEl=document.getElementById('loader')!;
 
   // ── NEW: build letter spans for name ──
-  const nameWrap=document.getElementById('ldr-line-wrap');
+  const nameWrap=document.getElementById('ldr-line-wrap')!;
   'Atharv Kelwadkar'.split('').forEach(ch=>{
     const s=document.createElement('span');
     s.className='ldr-char';
@@ -687,7 +738,7 @@ const outroStart = (CANVAS_VW - 102) * vw / 100;
   });
 
   // ── NEW: build letter spans for subtitle ──
-  const subWrap=document.getElementById('ldr-sub-wrap');
+  const subWrap=document.getElementById('ldr-sub-wrap')!;
   'Multi — Disciplinary Designer'.split('').forEach(ch=>{
     const s=document.createElement('span');
     s.className='ldr-sub-char';
