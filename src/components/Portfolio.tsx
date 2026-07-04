@@ -815,12 +815,6 @@ export default function Portfolio() {
     <span class="nav-item" id="nav-proj-title"></span>
   </nav>
 
-  // <div id="social-links">
-  //   <a class="social-link" href="#" target="_blank">Instagram</a>
-  //   <a class="social-link" href="#" target="_blank">Behance</a>
-  //   <a class="social-link" href="#" target="_blank">LinkedIn</a>
-  //   <a class="social-link" href="#" target="_blank">Twitter</a>
-  // </div>
 
   <div id="bottom-right">
     <div class="filter-col" id="filter-col">
