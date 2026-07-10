@@ -25,7 +25,7 @@ export default function RootLayout({
         <link rel="preload" as="image" href="https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32549533e2ba8a35e5b07e_1.png" crossOrigin="anonymous"/>
         <link rel="preload" as="image" href="https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a325478d5d27325522da347_1.png" crossOrigin="anonymous"/>
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>{children}</body>
     </html>
   );
 }

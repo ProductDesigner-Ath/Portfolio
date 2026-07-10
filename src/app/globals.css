@@ -183,6 +183,18 @@ body {
       background-size:20px 20px;
     }
     #project-view.show{opacity:1;pointer-events:auto;}
+
+    #proj-close-x{
+      position:absolute;top:22px;right:26px;
+      font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;
+      text-transform:uppercase;background:none;border:1px solid #111;
+      color:#111;cursor:none;padding:5px 10px;
+      opacity:0;transition:opacity .4s ease .5s,background .2s,color .2s;
+      pointer-events:none;z-index:20;
+    }
+    #project-view.show #proj-close-x{opacity:1;pointer-events:auto;}
+    #proj-close-x:hover{background:#111;color:#fff;}
+
     #proj-nav-spacer{height:62px;flex-shrink:0;}
 
     /* MARQUEE */
