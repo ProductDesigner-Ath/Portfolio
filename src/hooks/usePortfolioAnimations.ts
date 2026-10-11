@@ -634,7 +634,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
 
         /* REVEAL + INIT GL */
         /* REVEAL + INIT GL */
-        const INTRO_TAGLINE = 'Currently open to remote product design roles. Based in Bombay, working with teams in the US, UK and EU.';
+        const INTRO_TAGLINE = 'Product designer and no-code developer. 6+ years turning ideas into interfaces for startups across SaaS, web3 and e-commerce.';
         function revealCanvas() {
           if (!isMobileView) { initGL(); }
           setTimeout(() => {
@@ -665,8 +665,8 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
 
           setTimeout(() => document.querySelectorAll<HTMLImageElement>('.photo img').forEach(img => createGLMesh(img)), 200);
 
-          // Desktop: social links sit centred under the hero image.
-          document.getElementById('intro-image-wrap')!.appendChild(document.getElementById('social-links')!);
+          // Desktop: social links sit on the right, level with the intro tagline.
+          document.getElementById('intro-screen')!.appendChild(document.getElementById('social-links')!);
 
           const socialEl = document.getElementById('social-links')!;
           const filterEl = document.getElementById('bottom-right')!;

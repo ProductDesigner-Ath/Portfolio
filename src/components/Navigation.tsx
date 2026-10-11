@@ -14,6 +14,13 @@ export default function Navigation() {
         <a href="mailto:hire@atharv.space" className="nav-item" id="nav-contact-btn">[Contact]</a>
       </div>
       <span className="nav-item" id="nav-proj-title"></span>
+      <div id="open-strip" aria-label="Open to work: remote roles, based in Bombay, working with US, UK and EU teams">
+        <div className="open-strip-track" aria-hidden="true">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <span key={i}>OPEN TO WORK <b>✦</b> REMOTE ROLES <b>✦</b> BASED IN BOMBAY <b>✦</b> US / UK / EU <b>✦</b> </span>
+          ))}
+        </div>
+      </div>
     </nav>
   );
 }
