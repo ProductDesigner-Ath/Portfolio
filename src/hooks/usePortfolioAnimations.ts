@@ -661,6 +661,12 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
               });
             }, { threshold: 0.12 });
 
+            // Open-to-work strip: hero only (hide once the page scrolls)
+            const stripEl = document.getElementById('open-strip');
+            const onMobileScroll = () => stripEl?.classList.toggle('hidden', window.scrollY > window.innerHeight * 0.5);
+            window.addEventListener('scroll', onMobileScroll, { passive: true });
+            onMobileScroll();
+
             if (mobileGridEl) mobileObserver.observe(mobileGridEl);
             mobileObserver.observe(outroScreen);
 
@@ -688,6 +694,9 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
 
             // Social: visible on hero + outro, hidden in casestudy zone
             socialEl.classList.toggle('hidden', inStudy);
+
+            // Open-to-work strip: hero only
+            document.getElementById('open-strip')?.classList.toggle('hidden', !inHero);
 
             // Filter: visible only in casestudy zone
             filterEl.classList.toggle('hidden', !inStudy);

@@ -620,7 +620,8 @@ a.gal-nav-link:hover { color: #fff; }
 }
 
 /* Open-to-work marquee under the menu */
-#open-strip{position:absolute;left:0;right:0;top:100%;overflow:hidden;background:#e0e0e0;color:#111;pointer-events:none;}
+#open-strip{position:absolute;left:0;right:0;top:100%;overflow:hidden;background:#e0e0e0;color:#111;pointer-events:none;transition:opacity .4s ease,transform .4s ease;}
+#open-strip.hidden{opacity:0;transform:translateY(-6px);}
 .open-strip-track{display:flex;width:max-content;animation:openStrip 38s linear infinite;}
 .open-strip-track span{white-space:nowrap;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;padding:6px 0;}
 .open-strip-track b{font-weight:400;margin:0 14px;color:#777;}
