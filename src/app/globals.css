@@ -584,8 +584,7 @@ a.gal-nav-link:hover { color: #fff; }
 .gal-scroll { position: fixed; inset: 0; z-index: 1; overflow-y: auto; }
 .gal-grid { padding: 120px 18px 140px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); column-gap: 18px; row-gap: 64px; align-items: start; }
 .gal-item { margin: 0; min-width: 0; }
-.gal-item figcaption span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 10px; }
-.gal-item figcaption { display: flex; justify-content: space-between; align-items: baseline; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 15px; color: #e8e8e8; margin-bottom: 8px; min-height: 18px; }
+.gal-item figcaption { text-align: right; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 15px; color: #e8e8e8; margin-bottom: 8px; min-height: 18px; }
 .gal-cell { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
 .gal-cell img { width: 100%; height: auto; object-fit: unset; display: block; }
 .gal-cell:hover img { opacity: .85; }

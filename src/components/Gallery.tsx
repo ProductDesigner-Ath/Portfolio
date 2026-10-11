@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { GALLERY } from '../data/gallery';
 
 type Mode = 'canvas' | 'grid';
@@ -146,28 +146,16 @@ function CanvasView({ onOpen }: { onOpen: (i: number) => void }) {
 }
 
 // Editorial index (after gilhuybrecht.com): an even column grid where every
-// image keeps its natural shape and rows align to the top. Each image gets a
-// label: the project name on its first image, and its number within the project.
+// image keeps its natural shape and rows align to the top, each with a number.
 function GridView({ onOpen }: { onOpen: (i: number) => void }) {
-  const labels = useMemo(() => {
-    const count: Record<string, number> = {};
-    return GALLERY.map((g) => {
-      count[g.title] = (count[g.title] || 0) + 1;
-      return { title: count[g.title] === 1 ? g.title : '', n: count[g.title] };
-    });
-  }, []);
-
   return (
     <div className="gal-scroll">
       <div className="gal-grid">
         {GALLERY.map((g, i) => (
           <figure className="gal-item" key={g.src}>
-            <figcaption>
-              <span>{labels[i].title}</span>
-              <span>{labels[i].n}</span>
-            </figcaption>
-            <button className="gal-cell" onClick={() => onOpen(i)} aria-label={`Open ${g.title} ${labels[i].n}`}>
-              <img src={g.src} alt={`${g.title} ${labels[i].n}`} loading="lazy" />
+            <figcaption>{i + 1}</figcaption>
+            <button className="gal-cell" onClick={() => onOpen(i)} aria-label={`Open image ${i + 1}`}>
+              <img src={g.src} alt={g.title} loading="lazy" />
             </button>
           </figure>
         ))}
