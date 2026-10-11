@@ -38,6 +38,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
   <div id="intro-image-wrap">
     <img id="intro-image" src="https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a27d0e84cb71fd13f34c932_Portfolio%20Cards%20%5BRecovered%5D.png" alt="Portfolio Cards" draggable="false"/>
   </div>
+  <p id="intro-tagline"></p>
   <div id="intro-hint">Scroll to explore →</div>
 `;
         stage.insertBefore(introScreen, stage.firstChild);
@@ -633,11 +634,13 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
 
         /* REVEAL + INIT GL */
         /* REVEAL + INIT GL */
+        const INTRO_TAGLINE = 'Currently open to remote product design roles. Based in Bombay, working with teams in the US, UK and EU.';
         function revealCanvas() {
           if (!isMobileView) { initGL(); }
           setTimeout(() => {
             document.getElementById('intro-image-wrap')!.classList.add('revealed');
             setTimeout(() => { document.getElementById('intro-svg-wrap')!.classList.add('revealed'); document.getElementById('intro-hint')!.classList.add('revealed'); }, 320);
+            setTimeout(() => new TextScramble(document.getElementById('intro-tagline')!).setText(INTRO_TAGLINE), 700);
           }, 80);
           Object.values(photoEls).forEach(({ el }, i) => setTimeout(() => gsap.to(el, { opacity: 1, duration: 0.6, ease: 'power2.out' }), i * 65));
 
@@ -661,6 +664,9 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
           }
 
           setTimeout(() => document.querySelectorAll<HTMLImageElement>('.photo img').forEach(img => createGLMesh(img)), 200);
+
+          // Desktop: social links sit centred under the hero image.
+          document.getElementById('intro-image-wrap')!.appendChild(document.getElementById('social-links')!);
 
           const socialEl = document.getElementById('social-links')!;
           const filterEl = document.getElementById('bottom-right')!;

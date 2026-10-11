@@ -607,3 +607,18 @@ a.gal-nav-link:hover { color: #fff; }
   .gal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 84px 16px 120px; column-gap: 12px; row-gap: 36px; }
   .gal-item figcaption { font-size: 13px; }
 }
+
+/* ---------- Hero layout (desktop) ---------- */
+#intro-tagline{display:none;}
+@media (min-width:769px){
+  /* Name sits on the bottom edge with half of it cut off */
+  #intro-svg-wrap{top:auto;bottom:0;left:0;transform:translateY(50%);}
+  /* Postcard nudged up to balance the name */
+  #intro-image-wrap{top:42%;}
+  #intro-image-wrap #social-links{position:absolute;left:50%;top:calc(100% + 22px);bottom:auto;transform:translateX(-50%);z-index:3;}
+  #intro-tagline{
+    display:block;position:absolute;left:3vw;bottom:calc(8.6vw + 26px);z-index:3;margin:0;
+    max-width:34ch;font-family:'Space Mono',monospace;font-size:12px;line-height:1.6;
+    letter-spacing:.02em;text-align:left;color:#111;pointer-events:none;
+  }
+}
