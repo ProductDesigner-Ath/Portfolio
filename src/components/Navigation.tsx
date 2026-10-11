@@ -6,6 +6,7 @@ export default function Navigation() {
       <div className="nav-left">
         <button className="nav-item" id="nav-about-btn">[About]</button>
         <button className="nav-item" id="nav-casestudy-btn">[Case studies]</button>
+        <a href="/gallery" className="nav-item" id="nav-gallery-btn">[Gallery]</a>
       </div>
       <a href="#" className="nav-logo">ATHARV</a>
       <div className="nav-right">
