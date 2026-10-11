@@ -6,6 +6,15 @@ import { GALLERY } from '../data/gallery';
 
 type Mode = 'canvas' | 'grid';
 
+const isVideo = (src: string) => /\.(mp4|webm|mov|m4v)$/i.test(src);
+
+// Videos play muted on loop in the gallery; images render as usual.
+function Media({ src, alt, lazy = true }: { src: string; alt: string; lazy?: boolean }) {
+  return isVideo(src)
+    ? <video src={src} autoPlay muted loop playsInline preload="metadata" aria-label={alt} />
+    : <img src={src} alt={alt} draggable={false} loading={lazy ? 'lazy' : undefined} />;
+}
+
 // Seeded random so the canvas layout is the same on every visit.
 function rng(seed: number) {
   return () => {
@@ -136,7 +145,7 @@ function CanvasView({ onOpen }: { onOpen: (i: number) => void }) {
             onClick={() => !moved.current && onOpen(i)}
             aria-label={`Open ${g.title}`}
           >
-            <img src={g.src} alt={g.title} draggable={false} loading="lazy" />
+            <Media src={g.src} alt={g.title} />
           </button>
         ))}
       </div>
@@ -155,7 +164,7 @@ function GridView({ onOpen }: { onOpen: (i: number) => void }) {
           <figure className="gal-item" key={g.src}>
             <figcaption>{i + 1}</figcaption>
             <button className="gal-cell" onClick={() => onOpen(i)} aria-label={`Open image ${i + 1}`}>
-              <img src={g.src} alt={g.title} loading="lazy" />
+              <Media src={g.src} alt={g.title} />
             </button>
           </figure>
         ))}
@@ -199,7 +208,9 @@ export default function Gallery() {
       {open !== null && (
         <div className="gal-lightbox" role="dialog" aria-modal="true" aria-label={GALLERY[open].title} onClick={close}>
           <button className="gal-close" onClick={close} aria-label="Close image">[ ✕ CLOSE ]</button>
-          <img src={GALLERY[open].src} alt={GALLERY[open].title} onClick={(e) => e.stopPropagation()} />
+          {isVideo(GALLERY[open].src)
+            ? <video src={GALLERY[open].src} controls autoPlay playsInline onClick={(e) => e.stopPropagation()} />
+            : <img src={GALLERY[open].src} alt={GALLERY[open].title} onClick={(e) => e.stopPropagation()} />}
           <p>ESC TO CLOSE · {String(open + 1).padStart(2, '0')} / {String(GALLERY.length).padStart(2, '0')}</p>
         </div>
       )}

@@ -1,5 +1,6 @@
 // Gallery images. Replace or extend with books, artwork and experiments.
-// `title` is used for alt text.
+// `title` is used for alt text. Videos (.mp4, .webm, .mov) work too: they
+// play muted on loop in the gallery and with sound when opened.
 export const GALLERY: { src: string; title: string }[] = [
   { src: '/images/Client-Management/1.png', title: 'Client Management' },
   { src: '/images/Client-Management/2.png', title: 'Client Management' },

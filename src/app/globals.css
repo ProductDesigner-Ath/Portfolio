@@ -577,7 +577,7 @@ a.gal-nav-link:hover { color: #fff; }
 .gal-stage.is-dragging { cursor: grabbing; }
 .gal-world { position: absolute; inset: 0; transform-style: preserve-3d; }
 .gal-tile { position: absolute; top: 0; left: 0; padding: 0; border: 0; background: #151515; border-radius: 10px; overflow: hidden; cursor: inherit; will-change: transform; box-shadow: 0 18px 40px rgba(0,0,0,.45); }
-.gal-tile img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+.gal-tile img, .gal-tile video { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
 .gal-tile:hover img { filter: brightness(1.08); }
 .gal-hint { position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%); font-size: 10px; letter-spacing: .2em; color: #6f6f6f; pointer-events: none; z-index: 5; margin: 0; }
 
@@ -586,7 +586,7 @@ a.gal-nav-link:hover { color: #fff; }
 .gal-item { margin: 0; min-width: 0; }
 .gal-item figcaption { text-align: right; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 15px; color: #e8e8e8; margin-bottom: 8px; min-height: 18px; }
 .gal-cell { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
-.gal-cell img { width: 100%; height: auto; object-fit: unset; display: block; }
+.gal-cell img, .gal-cell video { width: 100%; height: auto; object-fit: unset; display: block; }
 .gal-cell:hover img { opacity: .85; }
 @media (max-width: 1400px) { .gal-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 @media (max-width: 1000px) { .gal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -595,7 +595,7 @@ a.gal-nav-link:hover { color: #fff; }
 .gal-switch button.active { background: #e8e8e8; color: #0a0a0a; }
 
 .gal-lightbox { position: fixed; inset: 0; z-index: 100; background: rgba(6,6,6,.94); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; animation: galFade .35s ease; cursor: zoom-out; }
-.gal-lightbox img { max-width: 92vw; max-height: 82vh; object-fit: contain; border-radius: 6px; cursor: default; animation: galZoom .45s cubic-bezier(.2,.8,.2,1); }
+.gal-lightbox img, .gal-lightbox video { max-width: 92vw; max-height: 82vh; object-fit: contain; border-radius: 6px; cursor: default; animation: galZoom .45s cubic-bezier(.2,.8,.2,1); }
 .gal-lightbox p { margin: 0; font-size: 10px; letter-spacing: .2em; color: #777; }
 .gal-close { position: absolute; top: 22px; right: 28px; font: inherit; font-size: 12px; letter-spacing: .08em; color: #ccc; background: none; border: 0; cursor: pointer; }
 .gal-close:hover { color: #fff; }
