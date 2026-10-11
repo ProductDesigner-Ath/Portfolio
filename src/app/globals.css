@@ -614,19 +614,24 @@ a.gal-nav-link:hover { color: #fff; }
   /* Name sits on the bottom edge with half of it cut off */
   #intro-svg-wrap{top:auto;bottom:0;left:0;transform:translateY(50%);}
   /* Postcard nudged up to balance the name */
-  #intro-image-wrap{top:42%;}
+  /* Postcard centred in the space between the menu strip and the tagline */
+  #intro-image-wrap{top:calc(50vh - 4.3vw + 10px);}
+  #intro-image{max-height:calc(100vh - 8.6vw - 200px);}
   #intro-screen > #social-links{position:absolute;right:3vw;left:auto;bottom:calc(8.6vw + 26px);z-index:3;}
   #intro-tagline{
     display:block;position:absolute;left:3vw;bottom:calc(8.6vw + 26px);z-index:3;margin:0;
-    max-width:34ch;font-family:'Space Mono',monospace;font-size:12px;line-height:1.6;
+    max-width:min(80ch, 62vw);font-family:'Space Mono',monospace;font-size:12px;line-height:1.6;
     letter-spacing:.02em;text-align:left;color:#111;pointer-events:none;
   }
 }
 
 /* Open-to-work marquee under the menu */
-#open-strip{position:absolute;left:0;right:0;top:100%;overflow:hidden;border-top:1px solid #111;border-bottom:1px solid #111;background:#111;color:#f4f4f4;pointer-events:none;}
+#open-strip{position:absolute;left:0;right:0;top:100%;overflow:hidden;background:#e0e0e0;color:#111;pointer-events:none;}
 .open-strip-track{display:flex;width:max-content;animation:openStrip 38s linear infinite;}
 .open-strip-track span{white-space:nowrap;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;padding:6px 0;}
-.open-strip-track b{font-weight:400;margin:0 14px;color:#c9a24b;}
+.open-strip-track b{font-weight:400;margin:0 14px;color:#777;}
 @keyframes openStrip{to{transform:translateX(-50%);}}
 @media (prefers-reduced-motion:reduce){.open-strip-track{animation:none;}}
+
+.nav-logo-mark{display:block;height:15px;width:auto;}
+.nav-logo-mark path{fill:#111;}
