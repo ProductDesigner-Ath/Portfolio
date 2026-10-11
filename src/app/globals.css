@@ -609,20 +609,14 @@ a.gal-nav-link:hover { color: #fff; }
 }
 
 /* ---------- Hero layout (desktop) ---------- */
-#intro-tagline{display:none;}
 @media (min-width:769px){
   /* Name sits on the bottom edge with half of it cut off */
   #intro-svg-wrap{top:auto;bottom:0;left:0;transform:translateY(50%);}
   /* Postcard nudged up to balance the name */
-  /* Postcard centred in the space between the menu strip and the tagline */
-  #intro-image-wrap{top:calc(50vh - 4.3vw + 10px);}
+  /* Postcard centred in the space between the menu strip and the name */
+  #intro-image-wrap{top:calc(50vh - 4.3vw + 24px);}
   #intro-image{max-height:calc(100vh - 8.6vw - 200px);}
-  #intro-screen > #social-links{position:absolute;right:3vw;left:auto;bottom:calc(8.6vw + 26px);z-index:3;}
-  #intro-tagline{
-    display:block;position:absolute;left:3vw;bottom:calc(8.6vw + 26px);z-index:3;margin:0;
-    max-width:min(80ch, 62vw);font-family:'Space Mono',monospace;font-size:12px;line-height:1.6;
-    letter-spacing:.02em;text-align:left;color:#111;pointer-events:none;
-  }
+  #intro-image-wrap #social-links{position:absolute;left:50%;top:calc(100% + 22px);bottom:auto;transform:translateX(-50%);z-index:3;}
 }
 
 /* Open-to-work marquee under the menu */
