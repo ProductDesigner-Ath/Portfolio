@@ -789,3 +789,11 @@ a.gal-nav-link:hover { color: #fff; }
 /* Gallery canvas: hide tiles until the first frame has placed them, then fade in */
 .gal-world{opacity:0;transition:opacity .6s ease;}
 .gal-world.is-ready{opacity:1;}
+
+/* Phones: postcards fill the column; small labels sized up so they stay readable */
+@media (max-width:768px){
+  #mobile-grid .pc-meta,#mobile-grid .pc-line,#mobile-grid .pc-cta{font-size:3cqw;}
+  #mobile-grid .pc-stamp{font-size:3cqw;width:11cqw;height:13cqw;}
+  #mobile-grid .pc-desc{font-size:3.4cqw;}
+  #mobile-grid .pc-title{font-size:5.4cqw;margin-right:13cqw;}
+}
