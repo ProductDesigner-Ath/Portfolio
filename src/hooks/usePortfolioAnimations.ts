@@ -45,13 +45,13 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
         stage.insertBefore(introScreen, stage.firstChild);
 
         /* WHAT I DO: capabilities + industries, between hero and projects */
-        const CAPABILITIES = [
-          ['Product design', 'Research to handoff · flows, systems, prototypes'],
-          ['UX / UI design', 'Interfaces for web and mobile · Figma'],
-          ['Web design + build', 'Webflow, Framer, Shopify · shipped as designed'],
-          ['Brand strategy', 'Positioning, voice, launch planning'],
-          ['Brand identity', 'Logos, type, visual systems'],
-          ['Graphic + motion', 'Campaigns, social, launch videos'],
+        const CAPABILITIES: [string, string[]][] = [
+          ['Product design', ['User research', 'Journey mapping', 'End-to-end user flows', 'Information architecture', 'Wireframes', 'Prototyping', 'Design systems', 'Developer handoff']],
+          ['UX / UI design', ['Web and mobile apps', 'SaaS dashboards', 'Interaction design', 'Responsive layouts', 'Usability reviews', 'Figma']],
+          ['Web design + development', ['Webflow', 'Framer', 'Shopify', 'WordPress', 'CMS architecture', 'E-commerce stores', 'Landing pages', 'Speed and SEO basics']],
+          ['Brand strategy', ['Positioning', 'Messaging and voice', 'Competitor research', 'Launch planning']],
+          ['Brand identity', ['Logos', 'Typography', 'Colour and visual systems', 'Brand guidelines', 'Packaging']],
+          ['Graphics + motion', ['Campaign graphics', 'Social media', 'Launch videos', 'Video and podcast thumbnails', 'After Effects', '3D in Blender']],
         ];
         const INDUSTRIES = [
           ['SaaS and B2B tools', 'Client management, project tools'],
@@ -68,7 +68,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
         skillsPanel.innerHTML = `
   <div class="sp-col sp-caps">
     <p class="sp-label">(01) What I do</p>
-    <ol>${CAPABILITIES.map(([name, detail], i) => `<li class="sp-cap"><span class="sp-name">${name}</span><span class="sp-num">${String(i + 1).padStart(2, '0')}</span><span class="sp-detail">${detail}</span></li>`).join('')}</ol>
+    <ol>${CAPABILITIES.map(([name, detail], i) => `<li class="sp-cap"><span class="sp-name">${name}</span><span class="sp-num">${String(i + 1).padStart(2, '0')}</span><span class="sp-detail">${detail.map(d => `<span>${d}</span>`).join('')}</span></li>`).join('')}</ol>
   </div>
   <div class="sp-col sp-inds">
     <p class="sp-label">(02) Industries</p>

@@ -716,8 +716,9 @@ a.gal-nav-link:hover { color: #fff; }
 .sp-cap:first-child{border-top:1px solid #e0e0e0;}
 .sp-name{font-family:'Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:clamp(24px,2.7vw,46px);letter-spacing:-.02em;line-height:1.1;}
 .sp-num{font-size:11px;color:#888;}
-.sp-detail{grid-column:1 / -1;font-size:11px;color:#555;max-height:0;overflow:hidden;opacity:0;transition:max-height .4s cubic-bezier(.76,0,.24,1),opacity .3s ease,margin .4s ease;}
-.sp-cap:hover .sp-detail{max-height:40px;opacity:1;margin-top:8px;}
+.sp-detail{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:6px;font-size:11px;color:#333;max-height:0;overflow:hidden;opacity:0;transition:max-height .4s cubic-bezier(.76,0,.24,1),opacity .3s ease,margin .4s ease;}
+.sp-cap:hover .sp-detail{max-height:120px;opacity:1;margin-top:10px;}
+.sp-detail span{border:1px solid #d8d8d8;padding:3px 8px;white-space:nowrap;}
 .sp-inds{align-self:center;border-left:1px solid #e0e0e0;padding-left:3vw;}
 .sp-inds li{padding:11px 0;border-bottom:1px solid #eee;display:flex;flex-direction:column;gap:3px;}
 .sp-ind{font-size:clamp(13px,1.05vw,16px);}
