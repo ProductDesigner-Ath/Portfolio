@@ -679,7 +679,7 @@ a.gal-nav-link:hover { color: #fff; }
 }
 
 /* ---------- About page ---------- */
-.about-page{position:relative;min-height:100vh;background:#fff;color:#111;font-family:'Space Mono',monospace;cursor:auto;user-select:auto;}
+.about-page{position:fixed;inset:0;overflow-y:auto;overscroll-behavior:contain;background:#fff;color:#111;font-family:'Space Mono',monospace;cursor:auto;user-select:auto;}
 .about-page .gal-bg{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70'%3E%3Cline x1='0' y1='35' x2='70' y2='35' stroke='%23e0e0e0' stroke-width='0.4'/%3E%3Cline x1='35' y1='0' x2='35' y2='70' stroke='%23e0e0e0' stroke-width='0.4'/%3E%3Cline x1='27' y1='35' x2='43' y2='35' stroke='%23b0b0b0' stroke-width='0.9'/%3E%3Cline x1='35' y1='27' x2='35' y2='43' stroke='%23b0b0b0' stroke-width='0.9'/%3E%3C/svg%3E");}
 .ab-tagline{position:fixed;left:26px;top:200px;max-width:220px;margin:0;font-size:11px;line-height:1.7;color:#555;z-index:2;}
 .ab-word{position:fixed;left:18px;bottom:-0.18em;margin:0;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:clamp(64px,12vw,240px);letter-spacing:-.05em;line-height:1;color:#111;z-index:1;pointer-events:none;}
@@ -707,3 +707,4 @@ a.gal-nav-link:hover { color: #fff; }
   .about-page .exp-row{grid-template-columns:1fr;}
   .ab-social{right:16px;}
 }
+.about-page .nav-standalone{background:linear-gradient(#fff 75%,rgba(255,255,255,0));padding-bottom:28px;}
