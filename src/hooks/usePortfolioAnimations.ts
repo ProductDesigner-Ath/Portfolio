@@ -934,7 +934,9 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
     return () => {
       alive = false;
       ctx.revert();
-      document.getElementById('outro-screen')?.remove();
+      // Remove everything this hook inserted, so a re-run (React dev StrictMode, or
+      // coming back to Home) never stacks a second copy on top of the first.
+      document.querySelectorAll('#outro-screen, #intro-screen, #skills-panel, #mobile-grid, #stage > .photo').forEach(el => el.remove());
     };
   }, []);
 };
