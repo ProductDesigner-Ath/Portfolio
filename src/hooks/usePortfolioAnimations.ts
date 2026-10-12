@@ -317,12 +317,15 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
           curEl.style.left = cx + 'px'; curEl.style.top = cy + 'px';
           curRing.style.left = rx + 'px'; curRing.style.top = ry + 'px';
           curCoords.style.left = (cx + 14) + 'px'; curCoords.style.top = (cy - 42) + 'px';
+          curCoords.textContent = makeCoord(cx, cy);
           requestAnimationFrame(animC);
         })();
-        function makeCoord() { const la = Math.random() * 180 - 90, lo = Math.random() * 360 - 180; return `${Math.abs(la).toFixed(4)} deg ${la >= 0 ? 'N' : 'S'}\n${Math.abs(lo).toFixed(4)} deg ${lo >= 0 ? 'E' : 'W'}`; }
-        let coord = makeCoord();
-        setInterval(() => { coord = makeCoord(); curCoords.textContent = coord; }, 820);
-        curCoords.textContent = coord;
+        // Screen position mapped to the globe: top = 90°N, bottom = 90°S, left = 180°W, right = 180°E.
+        function makeCoord(x: number, y: number) {
+          const la = 90 - (Math.min(Math.max(y, 0), window.innerHeight) / window.innerHeight) * 180;
+          const lo = (Math.min(Math.max(x, 0), window.innerWidth) / window.innerWidth) * 360 - 180;
+          return `${Math.abs(la).toFixed(4)} deg ${la >= 0 ? 'N' : 'S'}\n${Math.abs(lo).toFixed(4)} deg ${lo >= 0 ? 'E' : 'W'}`;
+        }
 
         let hoveredEl: HTMLElement | null = null;
         stage.addEventListener('mouseover', e => {

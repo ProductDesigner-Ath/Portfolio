@@ -637,3 +637,7 @@ a.gal-nav-link:hover { color: #fff; }
   nav{align-items:start;padding-top:48px;}
   .nav-left{flex-direction:column;align-items:flex-start;gap:8px;}
 }
+
+/* Cursor: square dot, no outer ring */
+#cursor{border-radius:0 !important;}
+#cursor-ring{display:none !important;}
