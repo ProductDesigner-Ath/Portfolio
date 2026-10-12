@@ -592,7 +592,6 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
 
         /* ABOUT */
         const aboutOverlay = document.getElementById('about-overlay')!;
-        const aboutBtn = document.getElementById('nav-about-btn')!;
         const aboutCloseX = document.getElementById('about-close-x')!;
         const aboutBio1El = document.getElementById('about-bio-1')!;
         const aboutBio2El = document.getElementById('about-bio-2')!;
@@ -601,7 +600,6 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
         const BIO_TEXT_1 = `With 6+ years of experience in design, I have worked with both industry-leading web3 projects and consumer startups — across brand identity, SaaS products, landing pages, and mobile apps.`;
         const BIO_TEXT_2 = `Focused on No-Code development — Shopify, Webflow, Framer — and Interface Design for apps, websites, and SaaS & PaaS platforms.I have worked with TedxGateway, Pulse Chain, Hex Chain, Quranium, Rektify AI, etc.`;
 
-        aboutBtn.addEventListener('click', () => { if (!aboutOpen) openAbout(); else closeAbout(); });
         aboutCloseX.addEventListener('click', closeAbout);
 
         document.querySelectorAll<HTMLElement>('.exp-row .exp-org, .exp-row .exp-role').forEach(el => {

@@ -7,7 +7,7 @@ import NameMark from './NameMark';
 const SCRAMBLE_CHARS = '!<>—_\\/[]{}=+*^?#@$%&';
 
 // Hover effect: scramble the label, then settle back (same feel as the About text).
-function scramble(el: HTMLElement, label: string) {
+export function scramble(el: HTMLElement, label: string) {
   const queue = [...label].map((to, i) => { const start = Math.floor(i * 1.1); return { to, start, end: start + 5 + Math.floor(Math.random() * 12), char: '' }; });
   let frame = 0;
   const prev = Number(el.dataset.raf || 0);
@@ -44,7 +44,7 @@ export default function Navigation({ home = true }: { home?: boolean }) {
   return (
     <nav id="main-nav" ref={navRef} className={home ? undefined : 'nav-standalone'}>
       <div className="nav-left">
-        {home ? <button className="nav-item" id="nav-about-btn">[About]</button> : <Link href="/" className="nav-item">[About]</Link>}
+        <Link href="/about" className="nav-item" id="nav-about-link">[About]</Link>
         {home ? <button className="nav-item" id="nav-casestudy-btn">[Case studies]</button> : <Link href="/" className="nav-item">[Case studies]</Link>}
         <a href="/gallery" className="nav-item" id="nav-gallery-btn">[Gallery]</a>
         <a href="/document/resume.pdf" className="nav-item" id="nav-resume-btn" target="_blank" rel="noopener noreferrer">[Resume]</a>
