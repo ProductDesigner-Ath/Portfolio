@@ -12,7 +12,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <head>
         <link rel="preload" as="image" href="https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32547a0be6c9f95b9414d7_1.png" crossOrigin="anonymous"/>
         <link rel="preload" as="image" href="https://cdn.prod.website-files.com/683316d8cf0a6a7db42fa797/6a32548ddc4295c73da78df3_1.png" crossOrigin="anonymous"/>

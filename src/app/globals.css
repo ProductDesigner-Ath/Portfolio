@@ -657,3 +657,4 @@ a.gal-nav-link:hover { color: #fff; }
 .gallery-page .gal-grid{padding-top:190px;}
 @media (max-width:768px){ .gallery-page .gal-grid{padding-top:230px;} }
 .gallery-page.mode-grid .nav-standalone{background:linear-gradient(#fff 80%,rgba(255,255,255,0));padding-bottom:24px;}
+@media (max-width:768px){ nav:not(.nav-standalone){padding-top:40px;} }

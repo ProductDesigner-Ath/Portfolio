@@ -145,7 +145,7 @@ function CanvasView({ onOpen }: { onOpen: (i: number) => void }) {
             onClick={() => !moved.current && onOpen(i)}
             aria-label={`Open ${g.title}`}
           >
-            <Media src={g.src} alt={g.title} />
+            <Media src={g.src} alt={g.title} lazy={false} />
           </button>
         ))}
       </div>

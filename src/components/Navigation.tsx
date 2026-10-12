@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import Link from 'next/link';
 import NameMark from './NameMark';
 
 const SCRAMBLE_CHARS = '!<>—_\\/[]{}=+*^?#@$%&';
@@ -43,13 +44,15 @@ export default function Navigation({ home = true }: { home?: boolean }) {
   return (
     <nav id="main-nav" ref={navRef} className={home ? undefined : 'nav-standalone'}>
       <div className="nav-left">
-        {home ? <button className="nav-item" id="nav-about-btn">[About]</button> : <a href="/" className="nav-item">[About]</a>}
-        {home ? <button className="nav-item" id="nav-casestudy-btn">[Case studies]</button> : <a href="/" className="nav-item">[Case studies]</a>}
+        {home ? <button className="nav-item" id="nav-about-btn">[About]</button> : <Link href="/" className="nav-item">[About]</Link>}
+        {home ? <button className="nav-item" id="nav-casestudy-btn">[Case studies]</button> : <Link href="/" className="nav-item">[Case studies]</Link>}
         <a href="/gallery" className="nav-item" id="nav-gallery-btn">[Gallery]</a>
         <a href="/document/resume.pdf" className="nav-item" id="nav-resume-btn" target="_blank" rel="noopener noreferrer">[Resume]</a>
         <a href="mailto:hire@atharv.space" className="nav-item" id="nav-contact-btn">[Contact]</a>
       </div>
-      <a href={home ? '#' : '/'} className="nav-logo" aria-label="Atharv, home"><NameMark className="nav-logo-mark" /></a>
+      {home
+        ? <a href="#" className="nav-logo" aria-label="Atharv, home"><NameMark className="nav-logo-mark" /></a>
+        : <Link href="/" className="nav-logo" aria-label="Atharv, home"><NameMark className="nav-logo-mark" /></Link>}
       <div className="nav-right"></div>
       {home && <span className="nav-item" id="nav-proj-title"></span>}
       {home && (
