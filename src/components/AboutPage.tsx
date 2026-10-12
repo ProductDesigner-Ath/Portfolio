@@ -33,7 +33,6 @@ export default function AboutPage() {
       <Navigation home={false} />
 
       <p className="ab-tagline"><em>Multi-disciplinary design, from interface to build.</em></p>
-      <p className="ab-word" aria-hidden="true">about</p>
 
       <div className="ab-col">
         <h1 className="ab-intro">Product designer based in Bombay, focused on interfaces that look considered and actually convert.</h1>
@@ -69,6 +68,8 @@ export default function AboutPage() {
           </ol>
         </section>
       </div>
+
+      <p className="ab-word" aria-hidden="true">about</p>
 
       <div className="ab-social">
         <a href="https://www.linkedin.com/in/atharv-kelwadkar" target="_blank" rel="noreferrer">LinkedIn</a>

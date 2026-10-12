@@ -41,6 +41,25 @@ export default function Navigation({ home = true }: { home?: boolean }) {
     return () => offs.forEach((off) => off());
   }, []);
 
+  // Hide the menu while scrolling down, bring it back on any scroll up.
+  // Listens in the capture phase so it also catches scrolling inside panels
+  // (About page, gallery grid), not just the window.
+  useEffect(() => {
+    const nav = navRef.current!;
+    const last = new WeakMap<EventTarget, number>();
+    const onScroll = (e: Event) => {
+      const el = e.target === document ? document.scrollingElement : (e.target as HTMLElement);
+      if (!el || !(el instanceof HTMLElement)) return;
+      const y = el.scrollTop;
+      const prev = last.get(el) ?? 0;
+      last.set(el, y);
+      if (Math.abs(y - prev) < 4) return;
+      nav.classList.toggle('nav-hidden', y > prev && y > 80);
+    };
+    document.addEventListener('scroll', onScroll, { capture: true, passive: true });
+    return () => document.removeEventListener('scroll', onScroll, { capture: true });
+  }, []);
+
   return (
     <nav id="main-nav" ref={navRef} className={home ? undefined : 'nav-standalone'}>
       <div className="nav-left">
