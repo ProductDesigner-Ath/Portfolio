@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import gsap from 'gsap';
 import { PHOTOS } from '../data/photos';
+import { CARDS } from '../data/cards';
 
 export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement | null>) => {
   useEffect(() => {
@@ -22,7 +23,9 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
         // ── FIX 2: canvas width tightened to eliminate empty space after last project ──
         // Width of the "What I do" panel that sits between the hero and the projects
         const SKILLS_VW = 80;
-        const CANVAS_VW = 340 + SKILLS_VW;
+        // Postcards are wider than the old bare images, so the scattered layout is spread out to match
+        const CARD_SCALE = 1.3;
+        const CANVAS_VW = 340 + SKILLS_VW + Math.round(130 * (CARD_SCALE - 1));
         const stage = document.getElementById('stage')!;
         if (!stage) return;
         if (!isMobileView) {
@@ -108,9 +111,22 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
             el.className = 'photo';
             el.dataset.id = p.id;
             el.dataset.cat = p.cat;
-            el.style.cssText = `left:${p.lx + 100 + SKILLS_VW}vw;top:${p.ly}vh;width:${p.lw * s}vw;z-index:${10 + i};opacity:0;`;
-            el.innerHTML = `<img src="${p.src}" alt="${p.title}" draggable="false"/>
-      <div class="photo-label">${p.title}<br>[${p.cat}]&nbsp;&nbsp;[${p.year}]</div>`;
+            el.style.cssText = `left:${p.lx * CARD_SCALE + 100 + SKILLS_VW}vw;top:${p.ly}vh;width:${p.lw * s * CARD_SCALE}vw;z-index:${10 + i};opacity:0;`;
+            const card = CARDS[p.id];
+            const body = card?.results
+              ? card.results.map(([k, v]) => `<div class="pc-line"><span>${k}</span><b>${v}</b></div>`).join('')
+              : `<p class="pc-desc">${card?.summary ?? ''}</p>`;
+            // Postcard: image on the left, project name + outcome on the right
+            el.innerHTML = `<div class="pc-card">
+        <div class="pc-img"><img src="${p.src}" alt="${p.title}" draggable="false"/></div>
+        <div class="pc-back">
+          <div class="pc-stamp">${p.year}</div>
+          <p class="pc-meta">[${p.cat}]</p>
+          <p class="pc-title">${p.title}</p>
+          ${body}
+          <span class="pc-cta">Open case study →</span>
+        </div>
+      </div>`;
             stage.appendChild(el);
             photoEls[p.id] = { el, p };
           });
