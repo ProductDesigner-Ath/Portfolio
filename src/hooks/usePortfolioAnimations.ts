@@ -598,11 +598,17 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
         const aboutBio2El = document.getElementById('about-bio-2')!;
         const bioScramble1 = new TextScramble(aboutBio1El);
         const bioScramble2 = new TextScramble(aboutBio2El);
-        const BIO_TEXT_1 = `With 8+ years of experience in design, I have worked with both industry-leading web3 projects and consumer startups — across brand identity, SaaS products, landing pages, and mobile apps.`;
+        const BIO_TEXT_1 = `With 6+ years of experience in design, I have worked with both industry-leading web3 projects and consumer startups — across brand identity, SaaS products, landing pages, and mobile apps.`;
         const BIO_TEXT_2 = `Focused on No-Code development — Shopify, Webflow, Framer — and Interface Design for apps, websites, and SaaS & PaaS platforms.I have worked with TedxGateway, Pulse Chain, Hex Chain, Quranium, Rektify AI, etc.`;
 
         aboutBtn.addEventListener('click', () => { if (!aboutOpen) openAbout(); else closeAbout(); });
         aboutCloseX.addEventListener('click', closeAbout);
+
+        document.querySelectorAll<HTMLElement>('.exp-row .exp-org, .exp-row .exp-role').forEach(el => {
+          const label = el.textContent || '';
+          const sc = new TextScramble(el);
+          el.closest('.exp-row')!.addEventListener('mouseenter', () => sc.setText(label));
+        });
 
         function openAbout() {
           aboutOpen = true;
@@ -613,7 +619,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
           setTimeout(() => bioScramble2.setText(BIO_TEXT_2), 780);
         }
         function closeAbout() {
-          aboutOpen = false; aboutOverlay.classList.remove('show');
+          aboutOpen = false; aboutOverlay.classList.remove('show'); aboutOverlay.scrollTop = 0;
           aboutBio1El.innerHTML = ''; aboutBio2El.innerHTML = '';
           const allPhotos = [...stage.querySelectorAll('.photo')];
           setTimeout(() => { gsap.fromTo(allPhotos, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out', stagger: { amount: 0.35, from: 'random' } }); }, 300);
@@ -698,7 +704,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
             const inStudy = !inHero && !inOutro;
 
             // Social: hero only (the outro screen has its own social links)
-            socialEl.classList.toggle('hidden', !inHero);
+            socialEl.classList.toggle('hidden', !inHero || aboutOpen || projectOpen);
 
             // Open-to-work strip: hero only
             document.getElementById('open-strip')?.classList.toggle('hidden', !inHero);
