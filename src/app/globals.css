@@ -614,13 +614,14 @@ a.gal-nav-link:hover { color: #fff; }
   #intro-svg-wrap{top:auto;bottom:0;left:0;transform:translateY(50%);}
   /* Postcard nudged up to balance the name */
   /* Postcard centred in the space between the menu strip and the name */
-  #intro-image-wrap{top:calc(50vh - 4.3vw + 24px);}
+  #intro-image-wrap{top:calc(50vh - 4.3vw - 5px);bottom:auto;transform:translate(-50%,-50%) scale(.94) translateY(18px);}
+  #intro-image-wrap.revealed{transform:translate(-50%,-50%) scale(1) translateY(0);}
   #intro-image{max-height:calc(100vh - 8.6vw - 200px);}
   #intro-image-wrap #social-links{position:absolute;left:50%;top:calc(100% + 22px);bottom:auto;transform:translateX(-50%);z-index:3;}
 }
 
 /* Open-to-work marquee under the menu */
-#open-strip{position:absolute;left:0;right:0;top:100%;overflow:hidden;background:#e0e0e0;color:#111;pointer-events:none;transition:opacity .4s ease,transform .4s ease;}
+#open-strip{position:absolute;left:0;right:0;top:0;overflow:hidden;background:#e0e0e0;color:#111;pointer-events:none;transition:opacity .4s ease,transform .4s ease;}
 #open-strip.hidden{opacity:0;transform:translateY(-6px);}
 .open-strip-track{display:flex;width:max-content;animation:openStrip 38s linear infinite;}
 .open-strip-track span{white-space:nowrap;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;padding:6px 0;}
@@ -630,3 +631,9 @@ a.gal-nav-link:hover { color: #fff; }
 
 .nav-logo-mark{display:block;height:15px;width:auto;}
 .nav-logo-mark path{fill:#111;}
+
+/* Desktop menu: all items stacked top-left, under the open-to-work strip */
+@media (min-width:769px){
+  nav{align-items:start;padding-top:48px;}
+  .nav-left{flex-direction:column;align-items:flex-start;gap:8px;}
+}
