@@ -10,7 +10,7 @@ const BIO = [
 ];
 
 // Replace with a black-and-white portrait in /public/images (e.g. '/images/atharv.jpg').
-const PHOTO: string | null = null;
+const PHOTO: string | null = '/images/atharv-about.webp';
 
 export default function AboutPage() {
   const bioRefs = useRef<(HTMLParagraphElement | null)[]>([]);
