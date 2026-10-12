@@ -117,7 +117,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
               ? card.results.map(([k, v]) => `<div class="pc-line"><span>${k}</span><b>${v}</b></div>`).join('')
               : `<p class="pc-desc">${card?.summary ?? ''}</p>`;
             // Postcard: image on the left, project name + outcome on the right
-            el.innerHTML = `<div class="pc-card">
+            el.innerHTML = `<div class="pc-card"><div class="pc-inner">
         <div class="pc-img"><img src="${p.src}" alt="${p.title}" draggable="false"/></div>
         <div class="pc-back">
           <div class="pc-stamp">${p.year}</div>
@@ -126,7 +126,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
           ${body}
           <span class="pc-cta">Open case study →</span>
         </div>
-      </div>`;
+      </div></div>`;
             stage.appendChild(el);
             photoEls[p.id] = { el, p };
           });

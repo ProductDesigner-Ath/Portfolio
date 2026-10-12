@@ -731,20 +731,22 @@ a.gal-nav-link:hover { color: #fff; }
 }
 
 /* ---------- Project postcards (home canvas) ---------- */
-.pc-card{display:grid;grid-template-columns:1.15fr 1fr;background:#fff;border:1px solid #cfcfcf;padding:.9vw;gap:.9vw;
-  -webkit-mask:radial-gradient(circle 5px at 5px 5px,#0000 98%,#000) -5px -5px/12px 12px round;mask:radial-gradient(circle 5px at 5px 5px,#0000 98%,#000) -5px -5px/12px 12px round;
+/* Outer layer = perforated stamp edge (dots punched only in the 8px border ring);
+   inner layer = solid paper face that holds the content. */
+.pc-card{padding:8px;background:radial-gradient(circle at 7px 7px,transparent 3.6px,#d9cdb4 4px) -1px -1px / 14px 14px;
   transition:transform .4s cubic-bezier(.34,1.4,.64,1),filter .4s ease;transform-origin:center;}
-.photo.hovered .pc-card{transform:translateY(-8px) rotate(-.8deg) scale(1.02);filter:drop-shadow(0 14px 22px rgba(0,0,0,.14));}
-.pc-img{border:1px solid #e3e3e3;background:#f4f4f4;display:flex;align-items:center;overflow:hidden;}
+.photo.hovered .pc-card{transform:translateY(-8px) rotate(-.8deg) scale(1.03);filter:drop-shadow(0 16px 24px rgba(60,40,10,.18));}
+.pc-inner{display:grid;grid-template-columns:1.1fr 1fr;gap:12px;background:#f6f0e3;padding:12px;}
+.pc-img{border:1px solid #e3d9c4;background:#fff;padding:4px;display:flex;align-items:center;overflow:hidden;}
 .pc-img img{width:100%;height:auto;display:block;}
-.pc-back{position:relative;display:flex;flex-direction:column;border-left:1px dashed #bdbdbd;padding:.2vw 0 0 .9vw;font-family:'Space Mono',monospace;color:#111;min-width:0;}
-.pc-stamp{position:absolute;top:0;right:0;width:2.6vw;height:3vw;border:1px dashed #9a9a9a;display:flex;align-items:center;justify-content:center;font-size:clamp(7px,.55vw,10px);color:#666;}
-.pc-meta{margin:0 0 .3vw;font-size:clamp(7px,.55vw,10px);color:#888;letter-spacing:.08em;text-transform:uppercase;}
-.pc-title{margin:0 3vw .6vw 0;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:clamp(11px,1.05vw,19px);line-height:1.1;letter-spacing:-.01em;}
-.pc-desc{margin:0;font-size:clamp(8px,.62vw,11px);line-height:1.6;color:#444;}
-.pc-line{display:flex;justify-content:space-between;align-items:baseline;gap:6px;border-bottom:1px solid #ddd;padding:.25vw 0;font-size:clamp(7px,.55vw,10px);color:#444;}
-.pc-line b{font-size:clamp(10px,.85vw,15px);color:#111;}
-.pc-cta{margin-top:auto;padding-top:.5vw;font-size:clamp(7px,.55vw,10px);color:#888;}
+.pc-back{position:relative;display:flex;flex-direction:column;border-left:1px dashed #b9aa8a;padding:2px 0 0 12px;font-family:'Space Mono',monospace;color:#2a2418;min-width:0;}
+.pc-stamp{position:absolute;top:0;right:0;width:36px;height:42px;border:1px dashed #a08d68;display:flex;align-items:center;justify-content:center;font-size:10px;color:#7a6a4c;background:#fbf8f1;}
+.pc-meta{margin:0 0 4px;font-size:10px;color:#8a7a5c;letter-spacing:.08em;text-transform:uppercase;}
+.pc-title{margin:0 44px 10px 0;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:clamp(14px,1.15vw,20px);line-height:1.1;letter-spacing:-.01em;}
+.pc-desc{margin:0;font-size:11px;line-height:1.55;color:#4a4232;}
+.pc-line{display:flex;justify-content:space-between;align-items:baseline;gap:6px;border-bottom:1px solid #e0d5bd;padding:4px 0;font-size:10px;color:#4a4232;}
+.pc-line b{font-size:14px;color:#2a2418;}
+.pc-cta{margin-top:auto;padding-top:8px;font-size:10px;color:#8a7a5c;}
 .photo .photo-label{display:none;}
 /* Filter: dim projects outside the chosen category */
 .photo{transition:opacity .45s ease,filter .45s ease;}
