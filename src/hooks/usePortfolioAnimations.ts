@@ -32,7 +32,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
           stage.style.width = CANVAS_VW + 'vw';
         }
 
-        // Colour each postcard from its own image: a light tint for the paper, a deeper tone for the stamp edge
+        // Tint each postcard's paper from its own image (the stamp frame stays black)
         function tintPostcard(el: HTMLElement) {
           const img = el.querySelector('img');
           if (!img) return;
@@ -42,17 +42,18 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
               const ctx = c.getContext('2d', { willReadFrequently: true }); if (!ctx) return;
               ctx.drawImage(img, 0, 0, 12, 12);
               const d = ctx.getImageData(0, 0, 12, 12).data;
+              // Weight pixels by saturation so the image's accent colour wins over white/grey UI chrome
               let r = 0, g = 0, b = 0, n = 0;
               for (let i = 0; i < d.length; i += 4) {
-                const lum = (d[i] + d[i + 1] + d[i + 2]) / 3;
-                if (lum > 235 || lum < 20) continue; // skip near-white / near-black so the tint carries colour
-                r += d[i]; g += d[i + 1]; b += d[i + 2]; n++;
+                const mx = Math.max(d[i], d[i + 1], d[i + 2]), mn = Math.min(d[i], d[i + 1], d[i + 2]);
+                const sat = mx ? (mx - mn) / mx : 0;
+                const w = 0.05 + sat * sat * 4;
+                r += d[i] * w; g += d[i + 1] * w; b += d[i + 2] * w; n += w;
               }
               if (!n) return;
               r /= n; g /= n; b /= n;
               const mix = (k: number) => `rgb(${Math.round(r + (255 - r) * k)},${Math.round(g + (255 - g) * k)},${Math.round(b + (255 - b) * k)})`;
-              el.style.setProperty('--pc-face', mix(0.8));
-              el.style.setProperty('--pc-edge', mix(0.4));
+              el.style.setProperty('--pc-face', mix(0.72));
             } catch { /* keep default colours */ }
           };
           if (img.complete && img.naturalWidth) apply(); else img.addEventListener('load', apply, { once: true });

@@ -733,13 +733,13 @@ a.gal-nav-link:hover { color: #fff; }
 /* ---------- Project postcards (home canvas) ---------- */
 /* Outer layer = perforated stamp edge (dots punched only in the 8px border ring);
    inner layer = solid paper face that holds the content. */
-.pc-card{--r:6px;padding:calc(2 * var(--r));background:var(--pc-edge,#d9cdb4);
-  /* Stamp edge: even half-circle notches around the border, solid in the middle */
+.pc-card{--r:5px;padding:calc(2 * var(--r) + 6px);background:#141414;
+  /* Stamp frame (matches the hero postcard stamp): thick black border, round notches on the outer edge */
   -webkit-mask:radial-gradient(var(--r),#0000 97%,#000) round calc(-1.5 * var(--r)) calc(-1.5 * var(--r)) / calc(3 * var(--r)) calc(3 * var(--r)),linear-gradient(#000 0 0) no-repeat 50% / calc(100% - 3 * var(--r)) calc(100% - 3 * var(--r));
   mask:radial-gradient(var(--r),#0000 97%,#000) round calc(-1.5 * var(--r)) calc(-1.5 * var(--r)) / calc(3 * var(--r)) calc(3 * var(--r)),linear-gradient(#000 0 0) no-repeat 50% / calc(100% - 3 * var(--r)) calc(100% - 3 * var(--r));
   transition:transform .4s cubic-bezier(.34,1.4,.64,1),filter .4s ease;transform-origin:center;}
 .photo.hovered .pc-card{transform:translateY(-8px) rotate(-.8deg) scale(1.03);filter:drop-shadow(0 16px 24px rgba(60,40,10,.18));}
-.pc-inner{display:grid;grid-template-columns:1.1fr 1fr;gap:12px;background:var(--pc-face,#f6f0e3);padding:12px;}
+.pc-inner{display:grid;grid-template-columns:1.1fr 1fr;gap:12px;background:var(--pc-face,#f4f4f2);padding:12px;}
 .pc-img{border:1px solid rgba(0,0,0,.08);background:#fff;padding:4px;display:flex;align-items:center;overflow:hidden;}
 .pc-img img{width:100%;height:auto;display:block;}
 .pc-back{position:relative;display:flex;flex-direction:column;border-left:1px dashed rgba(0,0,0,.28);padding:2px 0 0 12px;font-family:'Space Mono',monospace;color:#1d1d1d;min-width:0;}
