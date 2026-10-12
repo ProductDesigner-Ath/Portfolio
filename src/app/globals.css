@@ -656,7 +656,6 @@ a.gal-nav-link:hover { color: #fff; }
 .gallery-page .gal-switch button.active{background:#111;color:#fff;}
 .gallery-page .gal-grid{padding-top:190px;}
 @media (max-width:768px){ .gallery-page .gal-grid{padding-top:230px;} }
-.gallery-page.mode-grid .nav-standalone{background:linear-gradient(#fff 80%,rgba(255,255,255,0));padding-bottom:24px;}
 @media (max-width:768px){ nav:not(.nav-standalone){padding-top:40px;} }
 
 /* About: experience index below the first screen */
@@ -786,3 +785,7 @@ a.gal-nav-link:hover { color: #fff; }
   .pv-images{height:auto;overflow:visible;padding:0 16px 60px;}
   .pv-set + .pv-set{display:none;}
 }
+
+/* Gallery canvas: hide tiles until the first frame has placed them, then fade in */
+.gal-world{opacity:0;transition:opacity .6s ease;}
+.gal-world.is-ready{opacity:1;}

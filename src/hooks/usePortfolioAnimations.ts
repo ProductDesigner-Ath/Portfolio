@@ -7,7 +7,10 @@ import { CASE_STUDIES } from '../data/caseStudies';
 export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement | null>) => {
   useEffect(() => {
     window.gsap = gsap;
-    let ctx = gsap.context(() => {
+    // Set to false when the home page unmounts (client-side navigation), so window-level
+    // listeners and loops stop interfering with other pages.
+    let alive = true;
+    const ctx = gsap.context(() => {
       try {
 
         const isMobileView = window.innerWidth <= 768;
@@ -354,7 +357,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
         const canvasEl = document.getElementById('canvas');
         if (!hBar || !canvasEl) return;
         window.addEventListener('wheel', e => {
-          if (projectOpen || aboutOpen) return;
+          if (!alive || projectOpen || aboutOpen) return;
           e.preventDefault();
           targetX = Math.max(0, Math.min(targetX + (e.deltaY + e.deltaX) * 0.9, maxX()));
         }, { passive: false });
@@ -374,6 +377,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
 
         let isHovering = false;
         (function tick() {
+          if (!alive) return;
           prevX = currentX; currentX += (targetX - currentX) * 0.1; scrollVel = currentX - prevX;
           if (!projectOpen && !aboutOpen) { stage.style.transform = `translateX(-${currentX}px)`; const scrollable = maxX() - progressOffset(); const scrolled = Math.max(0, currentX - progressOffset()); hBar.style.width = (scrollable > 0 ? (scrolled / scrollable * 100) : 0) + '%'; }
           renderGL(scrollVel, isHovering); requestAnimationFrame(tick);
@@ -393,6 +397,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
         document.addEventListener('mousedown', () => document.body.classList.add('cur-click'));
         document.addEventListener('mouseup', () => document.body.classList.remove('cur-click'));
         (function animC() {
+          if (!alive) return;
           cx += (mx - cx) * 0.22; cy += (my - cy) * 0.22; rx += (mx - rx) * 0.09; ry += (my - ry) * 0.09;
           curEl.style.left = cx + 'px'; curEl.style.top = cy + 'px';
           curRing.style.left = rx + 'px'; curRing.style.top = ry + 'px';
@@ -842,6 +847,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
           const contactEl = document.getElementById('outro-contact')!;
 
           function updateZones() {
+            if (!alive) return;
             const vw = window.innerWidth;
             const heroEnd = vw * 0.7;
             const outroStart = (CANVAS_VW - 102) * vw / 100;
@@ -925,6 +931,10 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
 
       } catch (e) { console.error("Script Error:", e); }
     }, container);
-    return () => ctx.revert();
+    return () => {
+      alive = false;
+      ctx.revert();
+      document.getElementById('outro-screen')?.remove();
+    };
   }, []);
 };

@@ -93,6 +93,7 @@ function CanvasView({ onOpen }: { onOpen: (i: number) => void }) {
       } else if (world.style.filter) {
         world.style.filter = '';
       }
+      if (!world.classList.contains('is-ready')) world.classList.add('is-ready');
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
