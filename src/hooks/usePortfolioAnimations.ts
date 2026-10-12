@@ -32,6 +32,32 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
           stage.style.width = CANVAS_VW + 'vw';
         }
 
+        // Colour each postcard from its own image: a light tint for the paper, a deeper tone for the stamp edge
+        function tintPostcard(el: HTMLElement) {
+          const img = el.querySelector('img');
+          if (!img) return;
+          const apply = () => {
+            try {
+              const c = document.createElement('canvas'); c.width = c.height = 12;
+              const ctx = c.getContext('2d', { willReadFrequently: true }); if (!ctx) return;
+              ctx.drawImage(img, 0, 0, 12, 12);
+              const d = ctx.getImageData(0, 0, 12, 12).data;
+              let r = 0, g = 0, b = 0, n = 0;
+              for (let i = 0; i < d.length; i += 4) {
+                const lum = (d[i] + d[i + 1] + d[i + 2]) / 3;
+                if (lum > 235 || lum < 20) continue; // skip near-white / near-black so the tint carries colour
+                r += d[i]; g += d[i + 1]; b += d[i + 2]; n++;
+              }
+              if (!n) return;
+              r /= n; g /= n; b /= n;
+              const mix = (k: number) => `rgb(${Math.round(r + (255 - r) * k)},${Math.round(g + (255 - g) * k)},${Math.round(b + (255 - b) * k)})`;
+              el.style.setProperty('--pc-face', mix(0.8));
+              el.style.setProperty('--pc-edge', mix(0.4));
+            } catch { /* keep default colours */ }
+          };
+          if (img.complete && img.naturalWidth) apply(); else img.addEventListener('load', apply, { once: true });
+        }
+
         const introScreen = document.createElement('div');
         introScreen.id = 'intro-screen';
         introScreen.innerHTML = `
@@ -127,6 +153,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
           <span class="pc-cta">Open case study →</span>
         </div>
       </div></div>`;
+            tintPostcard(el);
             stage.appendChild(el);
             photoEls[p.id] = { el, p };
           });
