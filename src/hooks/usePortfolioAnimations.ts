@@ -32,7 +32,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
           stage.style.width = CANVAS_VW + 'vw';
         }
 
-        // Tint each postcard's paper from its own image (the stamp frame stays black)
+        // Colour each postcard from its own image: light tint for the paper, deeper tone for the stamp edge
         function tintPostcard(el: HTMLElement) {
           const img = el.querySelector('img');
           if (!img) return;
@@ -54,6 +54,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
               r /= n; g /= n; b /= n;
               const mix = (k: number) => `rgb(${Math.round(r + (255 - r) * k)},${Math.round(g + (255 - g) * k)},${Math.round(b + (255 - b) * k)})`;
               el.style.setProperty('--pc-face', mix(0.72));
+              el.style.setProperty('--pc-edge', mix(0.4));
             } catch { /* keep default colours */ }
           };
           if (img.complete && img.naturalWidth) apply(); else img.addEventListener('load', apply, { once: true });
