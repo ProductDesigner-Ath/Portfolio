@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import gsap from 'gsap';
 import { PHOTOS } from '../data/photos';
 import { CARDS } from '../data/cards';
+import { CASE_STUDIES } from '../data/caseStudies';
 
 export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement | null>) => {
   useEffect(() => {
@@ -623,20 +624,79 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
 
           // build text content
           projContent.innerHTML = '';
-          const sections: Array<{ label: string; text: string }> = [{ label: 'Overview', text: p.overview }, { label: 'Process', text: p.process }, { label: 'Outcome', text: p.outcome }];
-          // Split layout (after gilhuybrecht.com): fixed info column on the left, all images stacked on the right
-          const details: Array<[string, string]> = [['Role', p.role], ['Category', CAT_LABELS[p.cat] || p.cat], ['Year', p.year], ['Deliverables', (p.tags as string[]).join(', ')]];
+          // Split layout (after gilhuybrecht.com): content 40% left, looping image column 60% right
+          const cs = CASE_STUDIES[p.id] || {};
+          const oneLiner = cs.oneLiner || CARDS[p.id]?.summary || String(p.overview).split('. ')[0] + '.';
+          const results = cs.results || CARDS[p.id]?.results;
+          const decisions = cs.decisions || [{ title: 'Process', body: p.process }, { title: 'Outcome', body: p.outcome }];
+          const sections = [{ label: 'Overview', text: p.overview }, ...decisions.map((d: { title: string; body: string }) => ({ label: d.title, text: d.body }))];
           let html = `<div class="pv-split"><aside class="pv-info">
             <h1 class="pv-title">${p.title}</h1>
-            <ol class="pv-details">${details.map(([k, v], i) => `<li><span class="pv-n">${i + 1}</span><span class="pv-k">${k}</span><span class="pv-v">${v}</span></li>`).join('')}</ol>`;
-          sections.forEach((s, si) => {
-            html += `<div class="proj-section" data-delay="${si * 90}"><div class="proj-section-label">${s.label}</div><div class="proj-section-body" id="projbody-${si}"></div></div>`;
+            <p class="pv-oneliner">${oneLiner}</p>
+            <ol class="pv-details">
+              <li><span class="pv-k">Started</span><span class="pv-v">${cs.started || p.year}</span></li>
+              <li><span class="pv-k">Role</span><span class="pv-v">${p.role}</span></li>
+              <li><span class="pv-k">Category</span><span class="pv-v">${CAT_LABELS[p.cat] || p.cat}</span></li>
+            </ol>`;
+          if (results) html += `<div class="pv-results">${results.map(([k, v]: [string, string]) => `<div><b>${v}</b><span>${k}</span></div>`).join('')}</div>`;
+          sections.forEach((sec, si) => {
+            html += `<div class="proj-section" data-delay="${si * 90}"><div class="proj-section-label">${String(si + 1).padStart(2, '0')} — ${sec.label}</div><div class="proj-section-body" id="projbody-${si}"></div></div>`;
           });
-          html += `</aside><div class="pv-images">${(p.images as string[]).map((src: string, i: number) => `<img src="${src}" alt="${p.title} ${i + 1}" loading="${i < 2 ? 'eager' : 'lazy'}" draggable="false">`).join('')}</div></div>`;
+          html += `<div class="pv-tags">${(p.tags as string[]).map((t: string) => `<span>${t}</span>`).join('')}</div>`;
+          // three copies of the image set so the column can loop endlessly in both directions
+          const imgs = (p.images as string[]).map((src: string, i: number) => `<img src="${src}" alt="${p.title} ${i + 1}" draggable="false">`).join('');
+          html += `</aside><div class="pv-images"><div class="pv-set">${imgs}</div><div class="pv-set">${imgs}</div><div class="pv-set">${imgs}</div></div></div>`;
           projContent.innerHTML = html;
           sections.forEach((s, si) => { const el = document.getElementById(`projbody-${si}`); if (el) setTimeout(() => new TextScramble(el).setText(s.text), 600 + si * 280); });
+          setupImageColumn();
         }
 
+
+        // Right column: endless vertical loop + click-to-expand (FLIP) like gilhuybrecht.com
+        function setupImageColumn() {
+          const col = projContent.querySelector<HTMLElement>('.pv-images');
+          if (!col) return;
+          const sets = col.querySelectorAll<HTMLElement>('.pv-set');
+          const setH = () => sets[1].offsetTop - sets[0].offsetTop;
+          const centre = () => { if (setH() > 0) col.scrollTop = setH(); };
+          col.querySelectorAll('img').forEach(img => img.addEventListener('load', () => { if (col.scrollTop === 0) centre(); }, { once: true }));
+          requestAnimationFrame(centre);
+          col.addEventListener('scroll', () => {
+            const h = setH(); if (!h) return;
+            if (col.scrollTop < h * 0.5) col.scrollTop += h;
+            else if (col.scrollTop > h * 1.5) col.scrollTop -= h;
+          }, { passive: true });
+          col.addEventListener('click', e => {
+            const img = (e.target as HTMLElement).closest('img');
+            if (img) expandImage(img as HTMLImageElement);
+          });
+        }
+
+        function expandImage(img: HTMLImageElement) {
+          const from = img.getBoundingClientRect();
+          const ratio = img.naturalWidth / img.naturalHeight || from.width / from.height;
+          const w = Math.min(window.innerWidth * 0.92, window.innerHeight * 0.9 * ratio);
+          const h = w / ratio;
+          const backdrop = document.createElement('div');
+          backdrop.className = 'pv-zoom';
+          const clone = img.cloneNode() as HTMLImageElement;
+          clone.className = 'pv-zoom-img';
+          Object.assign(clone.style, { left: `${from.left}px`, top: `${from.top}px`, width: `${from.width}px`, height: `${from.height}px` });
+          backdrop.appendChild(clone);
+          document.body.appendChild(backdrop);
+          img.style.visibility = 'hidden';
+          gsap.to(backdrop, { backgroundColor: 'rgba(10,10,10,.92)', duration: 0.5, ease: 'power2.out' });
+          gsap.to(clone, { left: (window.innerWidth - w) / 2, top: (window.innerHeight - h) / 2, width: w, height: h, duration: 0.75, ease: 'expo.inOut' });
+          const close = () => {
+            document.removeEventListener('keydown', onKey);
+            const to = img.getBoundingClientRect();
+            gsap.to(backdrop, { backgroundColor: 'rgba(10,10,10,0)', duration: 0.5, ease: 'power2.in' });
+            gsap.to(clone, { left: to.left, top: to.top, width: to.width, height: to.height, duration: 0.65, ease: 'expo.inOut', onComplete: () => { img.style.visibility = ''; backdrop.remove(); } });
+          };
+          const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
+          backdrop.addEventListener('click', close, { once: true });
+          document.addEventListener('keydown', onKey, true);
+        }
 
         function animateContentIn() {
           projContent.querySelectorAll<HTMLElement>('.proj-section,.proj-divider').forEach(el => { const delay = +(el.dataset.delay || 0); setTimeout(() => el.classList.add('in'), delay + 200); });
