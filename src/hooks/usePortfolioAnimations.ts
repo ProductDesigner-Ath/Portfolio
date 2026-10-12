@@ -624,12 +624,15 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
           // build text content
           projContent.innerHTML = '';
           const sections: Array<{ label: string; text: string }> = [{ label: 'Overview', text: p.overview }, { label: 'Process', text: p.process }, { label: 'Outcome', text: p.outcome }];
-          let html = `<div class="proj-meta"><div><div class="proj-meta-title"><span class="proj-meta-title-inner">${p.title}</span></div><div class="proj-role">${p.role}</div></div><div class="proj-meta-right"><div class="proj-meta-year">[${p.year}]</div><div class="proj-meta-cat">${CAT_LABELS[p.cat] || p.cat}</div></div></div>`;
+          // Split layout (after gilhuybrecht.com): fixed info column on the left, all images stacked on the right
+          const details: Array<[string, string]> = [['Role', p.role], ['Category', CAT_LABELS[p.cat] || p.cat], ['Year', p.year], ['Deliverables', (p.tags as string[]).join(', ')]];
+          let html = `<div class="pv-split"><aside class="pv-info">
+            <h1 class="pv-title">${p.title}</h1>
+            <ol class="pv-details">${details.map(([k, v], i) => `<li><span class="pv-n">${i + 1}</span><span class="pv-k">${k}</span><span class="pv-v">${v}</span></li>`).join('')}</ol>`;
           sections.forEach((s, si) => {
             html += `<div class="proj-section" data-delay="${si * 90}"><div class="proj-section-label">${s.label}</div><div class="proj-section-body" id="projbody-${si}"></div></div>`;
-            if (si < sections.length - 1) html += `<div class="proj-divider" data-delay="${si * 90 + 50}"></div>`;
           });
-          html += `<div class="proj-section" data-delay="280"><div class="proj-section-label">Deliverables</div><div class="proj-tags">${(p.tags as string[]).map((t: string, ti: number) => `<span class="proj-tag" data-delay="${300 + ti * 55}">${t}</span>`).join('')}</div></div>`;
+          html += `</aside><div class="pv-images">${(p.images as string[]).map((src: string, i: number) => `<img src="${src}" alt="${p.title} ${i + 1}" loading="${i < 2 ? 'eager' : 'lazy'}" draggable="false">`).join('')}</div></div>`;
           projContent.innerHTML = html;
           sections.forEach((s, si) => { const el = document.getElementById(`projbody-${si}`); if (el) setTimeout(() => new TextScramble(el).setText(s.text), 600 + si * 280); });
         }

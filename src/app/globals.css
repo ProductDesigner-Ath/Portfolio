@@ -754,3 +754,23 @@ a.gal-nav-link:hover { color: #fff; }
 /* Filter: dim projects outside the chosen category */
 .photo{transition:opacity .45s ease,filter .45s ease;}
 .photo.cat-hidden{opacity:.12 !important;filter:grayscale(1);pointer-events:none;}
+
+/* ---------- Project view: info left (fixed), images right (scroll) ---------- */
+#proj-marquee-section{display:none !important;}
+#project-view #proj-content{max-width:none;padding:0;}
+.pv-split{display:grid;grid-template-columns:minmax(280px,30vw) minmax(0,1fr);column-gap:3vw;padding:110px 26px 120px;}
+.pv-info{position:sticky;top:110px;align-self:start;max-height:calc(100vh - 140px);overflow-y:auto;font-family:'Space Mono',monospace;color:#111;padding-right:8px;}
+.pv-title{font-family:'Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:clamp(28px,3vw,48px);letter-spacing:-.02em;line-height:1.05;margin:0 0 28px;}
+.pv-details{list-style:none;margin:0 0 32px;padding:0;border-top:1px solid #e0e0e0;}
+.pv-details li{display:grid;grid-template-columns:22px 110px minmax(0,1fr);gap:8px;padding:8px 0;border-bottom:1px solid #e0e0e0;font-size:11px;line-height:1.5;}
+.pv-n{color:#aaa;}
+.pv-k{color:#888;text-transform:uppercase;letter-spacing:.08em;}
+.pv-info .proj-section{margin:0 0 22px;}
+.pv-info .proj-section-label{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#888;margin-bottom:8px;}
+.pv-info .proj-section-body{font-size:12px;line-height:1.85;}
+.pv-images{display:flex;flex-direction:column;gap:16px;}
+.pv-images img{display:block;width:100%;height:auto;background:#f3f3f3;}
+@media (max-width:768px){
+  .pv-split{grid-template-columns:1fr;row-gap:36px;padding:90px 16px 80px;}
+  .pv-info{position:static;max-height:none;overflow:visible;}
+}
