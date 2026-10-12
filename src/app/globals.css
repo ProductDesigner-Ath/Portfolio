@@ -617,7 +617,7 @@ a.gal-nav-link:hover { color: #fff; }
   #intro-image-wrap{top:calc(50vh - 4.3vw - 5px);bottom:auto;transform:translate(-50%,-50%) scale(.94) translateY(18px);}
   #intro-image-wrap.revealed{transform:translate(-50%,-50%) scale(1) translateY(0);}
   #intro-image{max-height:calc(100vh - 8.6vw - 200px);}
-  #intro-image-wrap #social-links{position:absolute;left:50%;top:calc(100% + 22px);bottom:auto;transform:translateX(-50%);z-index:3;}
+  #social-links.under-hero{left:50%;bottom:auto;transform:translateX(-50%);}
 }
 
 /* Open-to-work marquee under the menu */
@@ -641,3 +641,19 @@ a.gal-nav-link:hover { color: #fff; }
 /* Cursor: square dot, no outer ring */
 #cursor{border-radius:0 !important;}
 #cursor-ring{display:none !important;}
+
+/* Gallery on the home-page background, with the home menu */
+.gallery-page{background:#fff;color:#111;}
+.gal-bg{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70'%3E%3Cline x1='0' y1='35' x2='70' y2='35' stroke='%23e0e0e0' stroke-width='0.4'/%3E%3Cline x1='35' y1='0' x2='35' y2='70' stroke='%23e0e0e0' stroke-width='0.4'/%3E%3Cline x1='27' y1='35' x2='43' y2='35' stroke='%23b0b0b0' stroke-width='0.9'/%3E%3Cline x1='35' y1='27' x2='35' y2='43' stroke='%23b0b0b0' stroke-width='0.9'/%3E%3C/svg%3E");}
+.nav-standalone{padding-top:20px;}
+.nav-standalone .nav-item,.nav-standalone .nav-logo{cursor:pointer;}
+.gallery-page .gal-tile{background:#eee;box-shadow:0 14px 34px rgba(0,0,0,.14);}
+.gallery-page .gal-cell{background:#eee;}
+.gallery-page .gal-item figcaption{color:#111;}
+.gallery-page .gal-hint{color:#999;}
+.gallery-page .gal-switch{background:rgba(255,255,255,.88);border-color:#ddd;}
+.gallery-page .gal-switch button{color:#777;}
+.gallery-page .gal-switch button.active{background:#111;color:#fff;}
+.gallery-page .gal-grid{padding-top:190px;}
+@media (max-width:768px){ .gallery-page .gal-grid{padding-top:230px;} }
+.gallery-page.mode-grid .nav-standalone{background:linear-gradient(#fff 80%,rgba(255,255,255,0));padding-bottom:24px;}

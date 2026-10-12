@@ -377,13 +377,6 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
           }
         }
 
-        /* MENU HOVER: same scramble as the About text */
-        document.querySelectorAll<HTMLElement>('nav .nav-item:not(#nav-proj-title)').forEach(el => {
-          const label = el.textContent || '';
-          const scramble = new TextScramble(el);
-          el.addEventListener('mouseenter', () => scramble.setText(label));
-        });
-
         /* PROJECT VIEW */
         const projectView = document.getElementById('project-view')!;
         const navProjTitle = document.getElementById('nav-proj-title')!;
@@ -678,8 +671,17 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
 
           setTimeout(() => document.querySelectorAll<HTMLImageElement>('.photo img').forEach(img => createGLMesh(img)), 200);
 
-          // Desktop: social links sit centred under the hero image.
-          document.getElementById('intro-image-wrap')!.appendChild(document.getElementById('social-links')!);
+          // Desktop: social links sit centred under the hero image. Positioned rather
+          // than moved in the DOM, since React owns the #social-links node.
+          const heroSocial = document.getElementById('social-links')!;
+          const placeSocial = () => {
+            const img = document.getElementById('intro-image')!.getBoundingClientRect();
+            if (!img.height) return;
+            heroSocial.classList.add('under-hero');
+            heroSocial.style.top = `${img.bottom + 22}px`;
+          };
+          setTimeout(placeSocial, 1100);
+          window.addEventListener('resize', placeSocial);
 
           const socialEl = document.getElementById('social-links')!;
           const filterEl = document.getElementById('bottom-right')!;
@@ -695,8 +697,8 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
             const inOutro = currentX >= outroStart;
             const inStudy = !inHero && !inOutro;
 
-            // Social: visible on hero + outro, hidden in casestudy zone
-            socialEl.classList.toggle('hidden', inStudy);
+            // Social: hero only (the outro screen has its own social links)
+            socialEl.classList.toggle('hidden', !inHero);
 
             // Open-to-work strip: hero only
             document.getElementById('open-strip')?.classList.toggle('hidden', !inHero);

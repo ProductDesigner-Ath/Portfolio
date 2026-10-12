@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { GALLERY } from '../data/gallery';
+import Navigation from './Navigation';
 
 type Mode = 'canvas' | 'grid';
 
@@ -192,11 +192,7 @@ export default function Gallery() {
   return (
     <main className={`gallery-page mode-${mode}`}>
       <div className="gal-bg" />
-      <header className="gal-nav">
-        <Link href="/" className="gal-nav-link">[ BACK TO PORTFOLIO ]</Link>
-        <span className="gal-wordmark">ATHARV</span>
-        <span className="gal-nav-link">[ GALLERY ]</span>
-      </header>
+      <Navigation home={false} />
 
       {mode === 'canvas' ? <CanvasView onOpen={setOpen} /> : <GridView onOpen={setOpen} />}
 
