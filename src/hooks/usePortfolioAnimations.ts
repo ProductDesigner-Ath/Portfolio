@@ -702,10 +702,12 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
             const inStudy = !inHero && !inOutro;
 
             // Social: hero only (the outro screen has its own social links)
-            socialEl.classList.toggle('hidden', !inHero || aboutOpen || projectOpen);
+            // Hero-only extras hide as soon as the hero starts scrolling away
+            const atHero = currentX < vw * 0.08;
+            socialEl.classList.toggle('hidden', !atHero || aboutOpen || projectOpen);
 
             // Open-to-work strip: hero only
-            document.getElementById('open-strip')?.classList.toggle('hidden', !inHero);
+            document.getElementById('open-strip')?.classList.toggle('hidden', !atHero);
 
             // Filter: visible only in casestudy zone
             filterEl.classList.toggle('hidden', !inStudy);
