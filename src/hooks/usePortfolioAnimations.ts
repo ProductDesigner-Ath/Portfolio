@@ -20,7 +20,9 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
         }
 
         // ── FIX 2: canvas width tightened to eliminate empty space after last project ──
-        const CANVAS_VW = 340;
+        // Width of the "What I do" panel that sits between the hero and the projects
+        const SKILLS_VW = 80;
+        const CANVAS_VW = 340 + SKILLS_VW;
         const stage = document.getElementById('stage')!;
         if (!stage) return;
         if (!isMobileView) {
@@ -41,6 +43,38 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
   <div id="intro-hint">Scroll to explore →</div>
 `;
         stage.insertBefore(introScreen, stage.firstChild);
+
+        /* WHAT I DO: capabilities + industries, between hero and projects */
+        const CAPABILITIES = [
+          ['Product design', 'Research to handoff · flows, systems, prototypes'],
+          ['UX / UI design', 'Interfaces for web and mobile · Figma'],
+          ['Web design + build', 'Webflow, Framer, Shopify · shipped as designed'],
+          ['Brand strategy', 'Positioning, voice, launch planning'],
+          ['Brand identity', 'Logos, type, visual systems'],
+          ['Graphic + motion', 'Campaigns, social, launch videos'],
+        ];
+        const INDUSTRIES = [
+          ['SaaS and B2B tools', 'Client management, project tools'],
+          ['Fintech and web3', 'Quranium, PulseChain, Hex Chain'],
+          ['E-commerce and D2C', 'Shopify stores via Kraftelite'],
+          ['Media and publishing', 'Ramdoot'],
+          ['Events and culture', 'TEDxGateway'],
+          ['Interiors and lifestyle', 'House of Abigal'],
+          ['AI products', 'Rektify AI'],
+        ];
+        const skillsPanel = document.createElement('section');
+        skillsPanel.id = 'skills-panel';
+        skillsPanel.setAttribute('aria-label', 'What I do');
+        skillsPanel.innerHTML = `
+  <div class="sp-col sp-caps">
+    <p class="sp-label">(01) What I do</p>
+    <ol>${CAPABILITIES.map(([name, detail], i) => `<li class="sp-cap"><span class="sp-name">${name}</span><span class="sp-num">${String(i + 1).padStart(2, '0')}</span><span class="sp-detail">${detail}</span></li>`).join('')}</ol>
+  </div>
+  <div class="sp-col sp-inds">
+    <p class="sp-label">(02) Industries</p>
+    <ul>${INDUSTRIES.map(([name, clients]) => `<li><span class="sp-ind">${name}</span><span class="sp-clients">${clients}</span></li>`).join('')}</ul>
+  </div>`;
+        introScreen.after(skillsPanel);
 
         const photoEls: Record<string, { el: HTMLDivElement; p: any }> = {};
         let mobileGridEl: HTMLDivElement | null = null;
@@ -74,7 +108,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
             el.className = 'photo';
             el.dataset.id = p.id;
             el.dataset.cat = p.cat;
-            el.style.cssText = `left:${p.lx + 100}vw;top:${p.ly}vh;width:${p.lw * s}vw;z-index:${10 + i};opacity:0;`;
+            el.style.cssText = `left:${p.lx + 100 + SKILLS_VW}vw;top:${p.ly}vh;width:${p.lw * s}vw;z-index:${10 + i};opacity:0;`;
             el.innerHTML = `<img src="${p.src}" alt="${p.title}" draggable="false"/>
       <div class="photo-label">${p.title}<br>[${p.cat}]&nbsp;&nbsp;[${p.year}]</div>`;
             stage.appendChild(el);
@@ -608,6 +642,13 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
           el.closest('.exp-row')!.addEventListener('mouseenter', () => sc.setText(label));
         });
 
+        skillsPanel.querySelectorAll<HTMLElement>('.sp-cap').forEach(li => {
+          const nameEl = li.querySelector<HTMLElement>('.sp-name')!;
+          const label = nameEl.textContent || '';
+          const sc = new TextScramble(nameEl);
+          li.addEventListener('mouseenter', () => sc.setText(label));
+        });
+
         function openAbout() {
           aboutOpen = true;
           const allPhotos = [...stage.querySelectorAll('.photo')];
@@ -628,7 +669,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
         /* [Case studies] btn — scroll to first project */
         document.getElementById('nav-casestudy-btn')!.addEventListener('click', () => {
           if (projectOpen || aboutOpen) return;
-          targetX = Math.min(window.innerWidth * 1.05, maxX());
+          targetX = Math.min(window.innerWidth * (1.05 + SKILLS_VW / 100), maxX());
         });
 
         /* ESC */
