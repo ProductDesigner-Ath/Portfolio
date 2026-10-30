@@ -1,97 +1,158 @@
-'use client';
+// Ramdoot case study — copy and spacing taken 1:1 from Figma "Ramdoot — UX Case Study" (node 3001:25584).
+// `mt`, `pt` and `pb` are the Figma gaps in px at 1440 wide.
+import {
+  Body, CaseStudy, Columns, Compare, Eyebrow, Feature, Footer, Heading, Intro, Notice,
+  Pair, Panel, Row, Screens, Section, ShaderButton, Showcase, Split, Steps, type Img,
+} from './CaseStudyKit';
 
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import FluidImageCanvas from './FluidImageCanvas';
+const dir = '/images/Ramdoot-CS';
+const FIGMA_URL = 'https://www.figma.com/design/ABq4OGc0qgzCml5NbAqYKT/Ramdoot-Main-Design---Atharv?node-id=3001-25584&t=D2zGjYbVVcyrL97E-1';
+const img = (name: string, alt: string): Img => ({ src: `${dir}/${name}.webp`, alt });
 
-const screens = [
-  { src: '/images/Ramdoot-PD/1.png', alt: 'Ramdoot library and magazine issue screen' },
-  { src: '/images/Ramdoot-PD/2.png', alt: 'Ramdoot mobile magazine experience' },
-  { src: '/images/Ramdoot-PD/3.png', alt: 'Ramdoot account creation and magazine cover' },
-  { src: '/images/Ramdoot-PD/4.png', alt: 'Ramdoot reader and issue detail views' },
-  { src: '/images/Ramdoot-PD/5.png', alt: 'Ramdoot creator and payout screens' },
-  { src: '/images/Ramdoot-PD/6.png', alt: 'Ramdoot dashboard and administration screens' },
-];
+const shots = {
+  heroDesktop: img('hero-desktop', 'Ramdoot V2 home on desktop: hero with featured magazine covers and Continue Reading'),
+  heroMobile: img('hero-mobile', 'Ramdoot V2 home on mobile'),
+  library: img('access-library', 'Ramdoot V2 library showing where editions are accessed'),
+  issue: img('access-issue', 'Ramdoot V2 issue detail with the single-issue purchase entry'),
+  journeyDesktop: img('journey-desktop', 'Ramdoot V2 desktop home with discovery and Continue Reading'),
+  journeyMobile: img('journey-mobile', 'Ramdoot V2 mobile home with the same entry points'),
+  reader: img('reader', 'Ramdoot V2 PDF reader showing a magazine spread'),
+  visualDesktop: img('visual-desktop', 'Ramdoot V2 library with neutral surfaces around the illustrated covers'),
+  visualMobile: img('visual-mobile', 'Ramdoot V2 mobile screen'),
+};
 
 export default function RamdootCaseStudy() {
-  const [activeImage, setActiveImage] = useState<number | null>(null);
-
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && setActiveImage(null);
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
-
   return (
-    <main className="ramdoot-page">
-      <header className="case-nav">
-        <Link href="/" className="case-nav-link">[ BACK TO PORTFOLIO ]</Link>
-        <span className="case-wordmark">ATHARV</span>
-        <span className="case-status">[ IN DEVELOPMENT ]</span>
-      </header>
+    <CaseStudy>
+      <Intro
+        tags={['RAMDOOT', 'PRODUCT DESIGN', 'IN DEVELOPMENT']}
+        title={'Ramdoot\nFrom print to digital reading.'}
+        lede="Bringing Ramdoot’s magazine to digital readers through discovery, flexible access and a familiar reading experience."
+        action={<ShaderButton href={FIGMA_URL} label="View the Figma file" />}
+        meta={[['ROLE', 'Volunteer Design Lead'], ['SCOPE', 'Product, visual design & prototypes'], ['DELIVERY', 'Design + development in parallel']]}
+        showcase={<Showcase desktop={shots.heroDesktop} mobile={shots.heroMobile} />}
+        caption="V2 reference screens · Missing media is labelled “Cover art pending” in these presentation copies."
+      />
 
-      <section className="case-hero case-section">
-        <p className="case-kicker">RAMDOOT RESTORE / PRODUCT DESIGN / 2025</p>
-        <div className="hero-grid">
-          <h1>A magazine made<br />to be <em>passed on.</em></h1>
-          <div className="hero-intro">
-            <p>Turning a printed publication about India’s temple heritage into a digital reading experience people can access, share, and return to.</p>
-            <dl><div><dt>ROLE</dt><dd>Volunteer design lead</dd></div><div><dt>SCOPE</dt><dd>Product, web, mobile &amp; visual design</dd></div><div><dt>STATUS</dt><dd>Approved V2 · in development</dd></div></dl>
-          </div>
-        </div>
-        <button className="hero-screen image-trigger" onClick={() => setActiveImage(0)} aria-label="Open Ramdoot library screen">
-          <img src={screens[0].src} alt="" />
-          <span>OPEN SCREEN ↗</span>
-        </button>
-      </section>
+      <Section pt={64} pb={64}>
+        <Eyebrow>01 / FROM PRINT TO DIGITAL</Eyebrow>
+        <Split
+          mt={36}
+          heading={'The content existed.\nAccess had limits.'}
+          paragraphs={[
+            'Ramdoot Restore is an NGO with a pledge to restore 108 temples across India through community funding. Its magazine shares history and the work behind the mission.',
+            'Physical distribution limited its reach. Going digital creates a route for readers to discover editions, gain access and read beyond the printed copy.',
+          ]}
+        />
+        <Panel mt={115} label="THE DESIGN CHALLENGE" text={'Make the magazine easier to discover and read, while supporting\nboth recurring readers and occasional buyers.'} />
+      </Section>
 
-      <section className="case-section context-section">
-        <p className="case-index">01 / CONTEXT</p>
-        <div className="case-copy wide"><h2>From a physical magazine<br />to a shared digital library.</h2><p>Ramdoot Restore is a community-funded initiative restoring 108 temples across India. Its printed magazine was already reaching readers, but distribution limited who could find it. The digital product needed to keep the seriousness of the material while making each edition easier to purchase, read, and share with family.</p></div>
-        <div className="case-rule" />
-        <div className="three-facts"><p><b>The publication</b>One or two issues released every month.</p><p><b>The audience</b>History-curious younger readers, with an accessible path for existing readers.</p><p><b>The access model</b>Monthly subscription, single-issue purchase, and intended family access.</p></div>
-      </section>
+      <Section pt={58} pb={99}>
+        <Eyebrow>[02 / THE AUDIENCE PIVOT]</Eyebrow>
+        <Heading mt={36} size={46} className="cs-w700" text={'Our first assumption\nwas too narrow.'} />
+        <Body mt={31} size={23} text="Offline interest challenged who we thought the magazine was for." />
+        <Compare
+          mt={57}
+          variant="pivot"
+          from={{ label: 'WE EXPECTED', text: 'Older readers would\nlead interest.' }}
+          to={{ label: 'WHAT CHANGED OUR DIRECTION', text: 'Younger readers were more\ninterested than we expected.' }}
+        />
+        <Row mt={37} label="SOURCE / METHOD" text="Designer-reported conversations with existing readers and observations during offline selling. No participant or session count has been supplied; this is qualitative evidence, not an adoption metric." />
+      </Section>
 
-      <section className="case-section insight-section">
-        <p className="case-index">02 / AUDIENCE LEARNING</p>
-        <div className="insight-layout"><p className="insight-number">01</p><div><p className="case-kicker">THE PIVOT</p><h2>Our first assumption<br />was too narrow.</h2><p className="case-copy">We expected existing older readers to adopt the digital format first. Conversations with readers and observations during offline selling pointed elsewhere: younger readers were actively looking for factual, well-organised context around the history they were encountering.</p><p className="source-note">METHOD NOTE — Designer-reported conversations with existing readers and observations during offline selling. This is qualitative evidence, not an adoption metric.</p></div></div>
-      </section>
+      <Section pt={58} pb={95}>
+        <Eyebrow>[03 / ACCESS WITHOUT FORCING COMMITMENT]</Eyebrow>
+        <Heading mt={29} text="Two reader intentions. Two paths." />
+        <Body mt={32} size={22} className="cs-w1210" text="I retained subscription and single-issue access because a regular reader and an occasional buyer should not have to make the same commitment." />
+        <Pair
+          mt={41}
+          items={[
+            { label: 'A / RECURRING READER', text: 'Subscribe → receive new editions → library', img: shots.library, caption: 'SUBSCRIPTION ACCESS / V2 LIBRARY' },
+            { label: 'B / OCCASIONAL READER', text: 'Choose an issue → purchase → read', img: shots.issue, caption: 'ONE-TIME PURCHASE / V2 ISSUE DETAIL' },
+          ]}
+        />
+        <Body mt={38} size={18} className="cs-w1200" text="The library shows where editions are accessed; it does not show subscription plan selection. The right-hand screen provides the issue-specific purchase entry." />
+        <Body mt={45} size={17} muted className="cs-w1200" text="Shared family access is intended. Entitlement rules still need to be documented and validated with development." />
+      </Section>
 
-      <section className="case-section access-section">
-        <p className="case-index">03 / ACCESS MODEL</p>
-        <div className="case-copy"><h2>Two ways in.<br />One reading home.</h2><p>I retained both access paths because a regular reader and an occasional buyer should not have to make the same commitment.</p></div>
-        <div className="purchase-grid">
-          <figure><button className="image-trigger" onClick={() => setActiveImage(2)}><img src={screens[2].src} alt="Account creation and issue access" /></button><figcaption><b>SUBSCRIBE</b><span>Ongoing access to the issue library.</span></figcaption></figure>
-          <figure><button className="image-trigger" onClick={() => setActiveImage(3)}><img src={screens[3].src} alt="Single magazine issue purchase" /></button><figcaption><b>BUY ONE ISSUE</b><span>A clear path for an occasional reader.</span></figcaption></figure>
-        </div>
-      </section>
+      <Section pt={64} pb={35}>
+        <Eyebrow>04 / THE READER JOURNEY</Eyebrow>
+        <Heading mt={30} text={'Give readers a\nclear next step.'} />
+        <Body mt={70} className="cs-w1190" text="I kept discovery and “Continue Reading” together because returning readers need a direct route back, while new readers still need a starting point." />
+        <Screens mt={49} variant="journey" desktop={shots.journeyDesktop} mobile={shots.journeyMobile} />
+        <Eyebrow mt={34} className="cs-w760">DISCOVER &amp; RETURN</Eyebrow>
+        <Body mt={13} className="cs-w1100" text="The same entry points carry across desktop and mobile. Reading usability remains to be tested." />
+      </Section>
 
-      <section className="case-section reading-section">
-        <p className="case-index">04 / DISCOVERY &amp; READING</p>
-        <div className="reading-heading"><h2>The reading experience<br />starts before the PDF.</h2><p>The edition page gives readers a reason to begin, while the reader stays focused on the original magazine format. AI summaries and personalised entry points are being developed to help readers decide where to start.</p></div>
-        <div className="screen-mosaic"><button className="image-trigger mosaic-a" onClick={() => setActiveImage(1)}><img src={screens[1].src} alt="Mobile Ramdoot reading journey" /></button><button className="image-trigger mosaic-b" onClick={() => setActiveImage(3)}><img src={screens[3].src} alt="Ramdoot issue discovery screen" /></button></div>
-      </section>
+      <Section pt={64} pb={39}>
+        <Eyebrow>05 / MAKE CONTENT THE DESTINATION</Eyebrow>
+        <Heading mt={30} text={'A familiar format.\nNew ways to begin.'} />
+        <Body mt={70} className="cs-w1190" text="The current design retains the PDF format. AI summaries and personalized introductions are in development to help readers understand an edition and choose where to start." />
+        <Feature
+          mt={53}
+          img={shots.reader}
+          label="IN DEVELOPMENT"
+          items={[
+            { title: 'A short summary', text: 'An overview before choosing a passage or reading the full magazine.' },
+            { title: 'A relevant introduction', text: 'A starting point connecting a new issue to topics the reader may find interesting.' },
+          ]}
+        />
+        <Body mt={34} size={16} muted className="cs-w1230" text="The image shows the current reader, not the upcoming AI features. Their benefits have not yet been validated." />
+        <Body mt={22} className="cs-w1230" text="Next to test: summary accuracy, useful recommendations and reader control." />
+      </Section>
 
-      <section className="case-section ai-section">
-        <p className="case-index">05 / AI-ASSISTED WORKFLOW</p>
-        <div className="case-copy"><h2>AI helped me move faster.<br />It did not make the decision.</h2><p>I used Claude, GPT, a local MCP connection, and a custom project workspace to keep client notes, approvals, design references, and constraints accessible while I explored alternatives.</p></div>
-        <div className="decision-map" aria-label="Decision path for equal access model"><div><span>01</span><b>Context</b><p>Reader may subscribe or purchase a single issue.</p></div><i>→</i><div><span>02</span><b>AI proposed</b><p>Lead with subscription and lower the single-issue option.</p></div><i>→</i><div className="decision-final"><span>03</span><b>I decided</b><p>Keep both choices visible: commitment should match reading intent.</p></div></div>
-        <p className="source-note">DRAFT SCENARIO — This worked example is an assumed reconstruction. Replace it with a documented exchange before publishing as evidence.</p>
-      </section>
+      <Section pt={56} pb={147}>
+        <Eyebrow>[06 / A DECISION, NOT JUST AN AI TOOL]</Eyebrow>
+        <Heading mt={34} size={42} text={'When I would override\nthe AI recommendation.'} />
+        <Notice mt={30} text="DRAFT SCENARIO / Assumed at the designer’s request. Replace or confirm against a real exchange before publication." />
+        <Row mt={29} size={27} label="DECISION TO EXAMINE" text="Should the first access choice push everyone into a subscription?" />
+        <Compare
+          mt={67}
+          variant="decision"
+          from={{ label: 'AI PROPOSES · ASSUMED', text: 'Lead with subscription.\nMove single-issue access lower.' }}
+          to={{ label: 'I OVERRIDE · TO CONFIRM', text: 'Keep both access routes visible\nwhen the reader chooses.' }}
+        />
+        <Row mt={39} size={22} label="WHY THE OVERRIDE" text="The product serves occasional buyers as well as recurring readers. I would prioritize that known requirement over an AI suggestion to promote one model." />
+        <Eyebrow mt={62}>PROPOSED DECISION PATH</Eyebrow>
+        <Steps
+          mt={28}
+          steps={[
+            { label: 'CHECK THE RECORD', text: 'Retrieve the two access models\nfrom project requirements.' },
+            { label: 'COMPARE THE OPTIONS', text: 'Review a subscription-first\nversion against equal access.' },
+            { label: 'KEEP THE CHOICE', text: 'Carry both routes into\nthe design for review.' },
+          ]}
+        />
+        <Body mt={41} className="cs-w1200 cs-lh150" text="Claude / GPT + project notes + local MCP provide context and variations. The designer checks the source requirement and makes the decision." />
+        <Body mt={46} size={17} muted className="cs-w1200" text="Evidence to add: original prompt, AI response, revised screen and a short explanation of the actual review. No conversion or time-saving result is claimed." />
+      </Section>
 
-      <section className="case-section visual-section">
-        <p className="case-index">06 / VISUAL DESIGN</p>
-        <div className="visual-title"><h2>Quiet interface.<br />The covers carry<br />the character.</h2><p>The reading environment stays intentionally restrained so a dense, illustrated editorial product can lead. Clear type, generous white space, and simple controls aim to reduce friction without competing with the magazine.</p></div>
-        <button className="visual-image image-trigger" onClick={() => setActiveImage(4)}><img src={screens[4].src} alt="Ramdoot visual interface and administration design" /><span>OPEN SCREEN ↗</span></button>
-      </section>
+      <Section pt={64} pb={6}>
+        <Eyebrow>07 / VISUAL DESIGN WITH A PURPOSE</Eyebrow>
+        <Split
+          mt={33}
+          variant="visual"
+          heading={'Let the magazine\nbring the character.'}
+          paragraphs={['I kept the interface deliberately neutral because the illustrated covers carry Ramdoot’s character. Familiar navigation and restrained controls keep attention on the magazine.']}
+        />
+        <Screens mt={80} variant="visual" desktop={shots.visualDesktop} mobile={shots.visualMobile} />
+      </Section>
 
-      <footer className="case-footer"><p>RAMDOOT RESTORE / 2025</p><p>Approved V2 · development in progress</p><Link href="/">RETURN TO PORTFOLIO ↗</Link></footer>
+      <Section pt={64}>
+        <Eyebrow>08 / WHERE THE PROJECT STANDS</Eyebrow>
+        <Heading mt={30} text={'Approved. In development.\nStill learning.'} />
+        <Body mt={70} className="cs-w1190" text="My contribution connects visual craft, product decisions and an AI-assisted workflow that keeps evolving requirements close to the design." />
+        <Columns
+          mt={72}
+          items={[
+            { label: 'APPROVED', text: 'V2 reader, mobile and operational design workflows.' },
+            { label: 'IN DEVELOPMENT', text: 'Implementation alongside design, including AI reading features.' },
+            { label: 'NEXT TO VALIDATE', text: 'Purchase clarity, reading usability, family access and summary accuracy.' },
+          ]}
+        />
+        <Body mt={52} size={16} muted text="No post-launch performance results are claimed. Figures in product mockups are interface content, not case-study evidence." />
+      </Section>
 
-      {activeImage !== null && <div className="image-viewer" role="dialog" aria-modal="true" aria-label="Expanded Ramdoot design screen" onClick={() => setActiveImage(null)}>
-        <button className="viewer-close" onClick={() => setActiveImage(null)} aria-label="Close expanded image">[ CLOSE ]</button>
-        <div className="viewer-webgl" onClick={(event) => event.stopPropagation()}><FluidImageCanvas src={screens[activeImage].src} alt={screens[activeImage].alt} /></div>
-        <p>ESC TO CLOSE · {String(activeImage + 1).padStart(2, '0')} / {String(screens.length).padStart(2, '0')}</p>
-      </div>}
-    </main>
+      <Footer left="RAMDOOT / VOLUNTEER DESIGN LEAD" right="UX CASE STUDY · V2" />
+    </CaseStudy>
   );
 }

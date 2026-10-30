@@ -729,26 +729,6 @@ a.gal-nav-link:hover { color: #fff; }
   .sp-name{font-size:28px;}
 }
 
-/* ---------- Project postcards (home canvas) ---------- */
-/* Every card is a true 3:2 postcard. All sizes inside use cqw (percent of the card width),
-   so a card can be scaled up or down without ever changing its proportions. */
-.photo{container-type:inline-size;}
-.pc-card{--r:1.2cqw;aspect-ratio:3 / 2;box-sizing:border-box;padding:calc(2 * var(--r) + 1.4cqw);background:var(--pc-edge,#b9b2a5);
-  -webkit-mask:radial-gradient(var(--r),#0000 97%,#000) round calc(-1.5 * var(--r)) calc(-1.5 * var(--r)) / calc(3 * var(--r)) calc(3 * var(--r)),linear-gradient(#000 0 0) no-repeat 50% / calc(100% - 3 * var(--r)) calc(100% - 3 * var(--r));
-  mask:radial-gradient(var(--r),#0000 97%,#000) round calc(-1.5 * var(--r)) calc(-1.5 * var(--r)) / calc(3 * var(--r)) calc(3 * var(--r)),linear-gradient(#000 0 0) no-repeat 50% / calc(100% - 3 * var(--r)) calc(100% - 3 * var(--r));
-  transition:transform .4s cubic-bezier(.34,1.4,.64,1),filter .4s ease;transform-origin:center;}
-.photo.hovered .pc-card{transform:translateY(-8px) rotate(-.8deg) scale(1.03);filter:drop-shadow(0 16px 24px rgba(0,0,0,.16));}
-.pc-inner{height:100%;box-sizing:border-box;display:grid;grid-template-columns:1fr 1fr;gap:3cqw;background:var(--pc-face,#f4f2ee);padding:3cqw;overflow:hidden;}
-.pc-img{background:#fff;border:1px solid rgba(0,0,0,.08);padding:1.2cqw;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:0;}
-.pc-img img{width:100%;height:auto;max-height:100%;object-fit:contain;display:block;}
-.pc-back{position:relative;display:flex;flex-direction:column;border-left:1px dashed rgba(0,0,0,.28);padding:0 0 0 3cqw;font-family:'Space Mono',monospace;color:#1d1d1d;min-width:0;min-height:0;}
-.pc-stamp{position:absolute;top:0;right:0;width:9cqw;height:11cqw;border:1px dashed rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-size:2.4cqw;color:#555;background:rgba(255,255,255,.55);}
-.pc-meta{margin:0 0 1cqw;font-size:2.4cqw;color:rgba(0,0,0,.5);letter-spacing:.08em;text-transform:uppercase;}
-.pc-title{margin:0 11cqw 2.4cqw 0;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:4.6cqw;line-height:1.1;letter-spacing:-.01em;}
-.pc-desc{margin:0;font-size:2.8cqw;line-height:1.55;color:#3a3a3a;}
-.pc-line{display:flex;justify-content:space-between;align-items:baseline;gap:1.5cqw;border-bottom:1px solid rgba(0,0,0,.12);padding:1cqw 0;font-size:2.4cqw;color:#3a3a3a;}
-.pc-line b{font-size:3.8cqw;color:#1d1d1d;}
-.pc-cta{margin-top:auto;padding-top:1.5cqw;font-size:2.4cqw;color:rgba(0,0,0,.5);}
 .photo .photo-label{display:none;}
 /* Filter: dim projects outside the chosen category */
 .photo{transition:opacity .45s ease,filter .45s ease;}
@@ -782,14 +762,6 @@ a.gal-nav-link:hover { color: #fff; }
 /* Gallery canvas: hide tiles until the first frame has placed them, then fade in */
 .gal-world{opacity:0;transition:opacity .6s ease;}
 .gal-world.is-ready{opacity:1;}
-
-/* Phones: postcards fill the column; small labels sized up so they stay readable */
-@media (max-width:768px){
-  #mobile-grid .pc-meta,#mobile-grid .pc-line,#mobile-grid .pc-cta{font-size:3cqw;}
-  #mobile-grid .pc-stamp{font-size:3cqw;width:11cqw;height:13cqw;}
-  #mobile-grid .pc-desc{font-size:3.4cqw;}
-  #mobile-grid .pc-title{font-size:5.4cqw;margin-right:13cqw;}
-}
 
 /* Menu hides while scrolling down, returns on scroll up */
 nav{transition:transform .45s cubic-bezier(.76,0,.24,1),opacity .35s ease;}

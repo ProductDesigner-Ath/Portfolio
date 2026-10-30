@@ -1,10 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { PHOTOS } from '../data/photos';
 import { CARDS } from '../data/cards';
-import { CASE_STUDIES } from '../data/caseStudies';
+import { leave } from '../lib/pageTransition';
 
-export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement | null>) => {
+export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement | null>, navigate: (href: string) => void) => {
+  const navigateRef = useRef(navigate);
+  useEffect(() => { navigateRef.current = navigate; });
   useEffect(() => {
     window.gsap = gsap;
     // Set to false when the home page unmounts (client-side navigation), so window-level
@@ -34,34 +36,6 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
         if (!stage) return;
         if (!isMobileView) {
           stage.style.width = CANVAS_VW + 'vw';
-        }
-
-        // Colour each postcard from its own image: light tint for the paper, deeper tone for the stamp edge
-        function tintPostcard(el: HTMLElement) {
-          const img = el.querySelector('img');
-          if (!img) return;
-          const apply = () => {
-            try {
-              const c = document.createElement('canvas'); c.width = c.height = 12;
-              const ctx = c.getContext('2d', { willReadFrequently: true }); if (!ctx) return;
-              ctx.drawImage(img, 0, 0, 12, 12);
-              const d = ctx.getImageData(0, 0, 12, 12).data;
-              // Weight pixels by saturation so the image's accent colour wins over white/grey UI chrome
-              let r = 0, g = 0, b = 0, n = 0;
-              for (let i = 0; i < d.length; i += 4) {
-                const mx = Math.max(d[i], d[i + 1], d[i + 2]), mn = Math.min(d[i], d[i + 1], d[i + 2]);
-                const sat = mx ? (mx - mn) / mx : 0;
-                const w = 0.05 + sat * sat * 4;
-                r += d[i] * w; g += d[i + 1] * w; b += d[i + 2] * w; n += w;
-              }
-              if (!n) return;
-              r /= n; g /= n; b /= n;
-              const mix = (k: number) => `rgb(${Math.round(r + (255 - r) * k)},${Math.round(g + (255 - g) * k)},${Math.round(b + (255 - b) * k)})`;
-              el.style.setProperty('--pc-face', mix(0.72));
-              el.style.setProperty('--pc-edge', mix(0.4));
-            } catch { /* keep default colours */ }
-          };
-          if (img.complete && img.naturalWidth) apply(); else img.addEventListener('load', apply, { once: true });
         }
 
         const introScreen = document.createElement('div');
@@ -112,20 +86,13 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
         introScreen.after(skillsPanel);
 
         function postcardHTML(p: any) {
-          const card = CARDS[p.id];
-          const body = card?.results
-            ? card.results.map(([k, v]) => `<div class="pc-line"><span>${k}</span><b>${v}</b></div>`).join('')
-            : `<p class="pc-desc">${card?.summary ?? ''}</p>`;
-          // Postcard: image on the left, project name + outcome on the right
+          const badge = CARDS[p.id]?.badge;
+          // Stamp-shaped card: the work (pre-cropped to 3:2, no white margins) fills it edge to edge, perforations cut into the image. A result (max two words) sits in the corner;
+          // the project name + arrow only appear on hover.
           return `<div class="pc-card"><div class="pc-inner">
-        <div class="pc-img"><img src="${p.src}" alt="${p.title}" draggable="false"/></div>
-        <div class="pc-back">
-          <div class="pc-stamp">${p.year}</div>
-          <p class="pc-meta">[${p.cat}]</p>
-          <p class="pc-title">${p.title}</p>
-          ${body}
-          <span class="pc-cta">Open case study →</span>
-        </div>
+        <img src="/images/cards/${p.slug}.webp" alt="${p.title}" draggable="false"/>
+        ${badge ? `<span class="pc-badge">${badge}</span>` : ''}
+        <div class="pc-hover"><span class="pc-name">${p.title}</span><span class="pc-arrow" aria-hidden="true">↗</span></div>
       </div></div>`;
         }
 
@@ -142,7 +109,6 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
             el.dataset.cat = p.cat;
             el.style.cssText = `z-index:${10 + i};opacity:0;`;
             el.innerHTML = postcardHTML(p);
-            tintPostcard(el);
             if (mobileGridEl) {
               mobileGridEl.appendChild(el);
             }
@@ -160,7 +126,6 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
             el.dataset.cat = p.cat;
             el.style.cssText = `left:${p.lx * CARD_SCALE + 100 + SKILLS_VW}vw;top:${p.ly}vh;width:${p.lw * s * CARD_SCALE}vw;z-index:${10 + i};opacity:0;`;
             el.innerHTML = postcardHTML(p);
-            tintPostcard(el);
             stage.appendChild(el);
             photoEls[p.id] = { el, p };
           });
@@ -302,23 +267,6 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
         }
 
         const glMeshes: Array<{ imgEl: HTMLImageElement; photoEl: Element | null; tex: WebGLTexture | null; texLoaded: boolean; currentAlpha: number; targetAlpha: number; currentOffX: number; currentOffY: number }> = [];
-        function createGLMesh(imgEl: HTMLImageElement) {
-          if (!gl) return null;
-          const tex = gl.createTexture();
-          if (!tex) return null;
-          gl.bindTexture(gl.TEXTURE_2D, tex);
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
-          const mesh = { imgEl, photoEl: imgEl.closest('.photo'), tex, texLoaded: false, currentAlpha: 0, targetAlpha: 0, currentOffX: 0, currentOffY: 0 };
-          const img = new Image(); img.crossOrigin = 'anonymous';
-          img.onload = () => { gl.bindTexture(gl.TEXTURE_2D, tex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img); mesh.texLoaded = true; };
-          img.src = imgEl.src;
-          glMeshes.push(mesh); return mesh;
-        }
-
         const IDX_COUNT = 20 * 20 * 6;
         function renderGL(scrollVel: number, isHovering: boolean) {
           if (!glReady || !gl || !glProg || !glCanvas || !uRes_loc || !uOffset_loc || !uPos_loc || !uSize_loc || !uAlpha_loc || !uTex_loc) return;
@@ -418,12 +366,12 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
           const photo = (e.target as Element).closest<HTMLElement>('.photo');
           if (!photo || projectOpen || aboutOpen) return;
           if (hoveredEl) hoveredEl.classList.remove('hovered');
-          photo.classList.add('hovered'); hoveredEl = photo; isHovering = true;
+          photo.classList.add('hovered'); hoveredEl = photo; isHovering = true; stage.classList.add('has-hover');
         });
         stage.addEventListener('mouseout', e => {
           const photo = (e.target as Element).closest<HTMLElement>('.photo');
           if (!photo) return;
-          if (!e.relatedTarget || !(e.relatedTarget as Element).closest('.photo')) { if (hoveredEl) { hoveredEl.classList.remove('hovered'); hoveredEl = null; } isHovering = false; }
+          if (!e.relatedTarget || !(e.relatedTarget as Element).closest('.photo')) { if (hoveredEl) { hoveredEl.classList.remove('hovered'); hoveredEl = null; } isHovering = false; stage.classList.remove('has-hover'); }
         });
 
         let touchTapStartX = 0, touchTapStartY = 0;
@@ -468,8 +416,6 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
         const navProjTitle = document.getElementById('nav-proj-title')!;
         const projMqStrip = document.getElementById('proj-marquee-strip')!;
         const projContent = document.getElementById('proj-content')!;
-        let mqRAF = 0, mqPaused = false, mqPos = 0, mqSpeed = 0.55, mqFullW = 0;
-        const CAT_LABELS: Record<string, string> = { brand: 'Brand Identity', landing: 'Landing Page Design', graphic: 'Graphic Design', app: 'App Design', packaging: 'Packaging Design', saas: 'SaaS Design', product: 'Product Design' };
 
         stage.addEventListener('click', e => {
           const photo = (e.target as Element).closest<HTMLElement>('.photo');
@@ -477,187 +423,20 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
           openProject(photo.dataset.id!);
         });
 
+        // Clicking a project goes straight to its case-study page with a shared-image transition.
         function openProject(id: string) {
-          const { p } = photoEls[id];
+          const { el, p } = photoEls[id];
+          if (projectOpen) return;
           projectOpen = true;
-          const allPhotos = [...stage.querySelectorAll('.photo')];
-          gsap.to(allPhotos, {
-            opacity: 0, y: -20, duration: 0.45, ease: 'power2.in', stagger: { amount: 0.3, from: 'random' },
-            onComplete: () => {
-              buildProjectView(p); projectView.scrollTop = 0;
-              navProjTitle.textContent = `${p.title}  —  [${p.year}]`;
-              document.body.classList.add('project-open');
-              gsap.set(projectView, { opacity: 0, pointerEvents: 'auto' });
-              gsap.to(projectView, {
-                opacity: 1, duration: 0.45, ease: 'power2.out', onComplete: () => {
-                  projectView.classList.add('show'); startMqLoop(); animateContentIn();
-                }
-              });
-            }
-          });
           if (hoveredEl) { hoveredEl.classList.remove('hovered'); hoveredEl = null; }
-          isHovering = false;
+          isHovering = false; stage.classList.remove('has-hover');
+          const others = [...stage.querySelectorAll('.photo')].filter(x => x !== el);
+          gsap.to(others, { opacity: 0, y: -12, duration: 0.6, ease: 'power2.inOut', stagger: { amount: 0.25, from: 'random' } });
+          leave(el.querySelector('img'), () => navigateRef.current(`/case-studies/${p.slug}`));
         }
-
-        function buildProjectView(p: any) {
-          projMqStrip.innerHTML = '';
-          projMqStrip.classList.remove('has-hover');
-          mqPos = 0; mqFullW = 0; mqPaused = false;
-
-          const stripH = Math.round(Math.min(window.innerHeight * 0.62, window.innerHeight - 180));
-          const allImgs = p.images as string[];
-
-          // build TWO sets for seamless marquee loop
-          function makeSet() {
-            return allImgs.map((src: string, idx: number) => {
-              const m = src.match(/\/(\d+)\/(\d+)$/);
-              const iW = m ? parseInt(m[1]) : 900, iH = m ? parseInt(m[2]) : 675;
-              const cardW = Math.round((iW / iH) * stripH);
-              const card = document.createElement('div');
-              card.className = 'mq-card';
-              card.dataset.idx = String(idx);
-              card.style.cssText = `width:${cardW}px;height:${stripH}px;`;
-              card.innerHTML = `<img src="${src}" alt="${p.title} ${idx + 1}" draggable="false">`;
-              return card;
-            });
-          }
-          const set1 = makeSet(), set2 = makeSet();
-          [...set1, ...set2].forEach(c => projMqStrip.appendChild(c));
-
-          requestAnimationFrame(() => requestAnimationFrame(() => {
-            let w = 0;
-            set1.forEach(c => { w += c.offsetWidth + 14; });
-            mqFullW = w;
-            // offset set2 to sit exactly after set1
-            projMqStrip.style.width = (mqFullW * 2) + 'px';
-            set2.forEach((c, i) => {
-              c.style.position = 'absolute';
-              c.style.top = '0';
-              let offset = 0;
-              set1.slice(0, i).forEach(s => { offset += s.offsetWidth + 14; });
-              c.style.left = (offset + mqFullW) + 'px';
-            });
-            gsap.to(set1, { opacity: 1, y: 0, duration: 0.75, ease: 'power3.out', stagger: { amount: 0.55, from: 'center' } });
-            gsap.set(set2, { opacity: 1, y: 0 });
-          }));
-
-
-          // draggable on top of marquee
-          let isDragging = false, dragStartX = 0, dragStartPos = 0, dragVel = 0, lastDragX = 0, momentumRAF = 0;
-          let resumeTimeout = 0;
-
-          function applyPos(x: number) {
-            if (mqFullW > 0) {
-              while (x <= -mqFullW) x += mqFullW;
-              while (x > 0) x -= mqFullW;
-            }
-            mqPos = x;
-            projMqStrip.style.transform = `translateX(${mqPos}px)`;
-          }
-
-          projMqStrip.style.cursor = 'grab';
-
-          // mouse
-          projMqStrip.addEventListener('mousedown', e => {
-            cancelAnimationFrame(momentumRAF);
-            clearTimeout(resumeTimeout);
-            isDragging = true;
-            mqPaused = true;
-            dragStartX = e.clientX;
-            dragStartPos = mqPos;
-            lastDragX = e.clientX;
-            dragVel = 0;
-            projMqStrip.style.cursor = 'grabbing';
-            e.preventDefault();
-          });
-          window.addEventListener('mousemove', e => {
-            if (!isDragging) return;
-            dragVel = e.clientX - lastDragX;
-            lastDragX = e.clientX;
-            let newPos = dragStartPos + (e.clientX - dragStartX);
-            // wrap within double-set bounds
-            if (mqFullW > 0) {
-              newPos = ((newPos % mqFullW) + mqFullW) % mqFullW * -1;
-              newPos = dragStartPos + (e.clientX - dragStartX);
-            }
-            applyPos(newPos);
-          });
-          window.addEventListener('mouseup', () => {
-            if (!isDragging) return;
-            isDragging = false;
-            projMqStrip.style.cursor = 'grab';
-            // momentum then resume marquee
-            let vel = dragVel;
-            (function momentum() {
-              if (Math.abs(vel) < 0.3) {
-                // resume auto-scroll after 800ms idle
-                resumeTimeout = window.setTimeout(() => { mqPaused = false; }, 800);
-                return;
-              }
-              applyPos(mqPos + vel);
-              vel *= 0.94;
-              momentumRAF = requestAnimationFrame(momentum);
-            })();
-          });
-
-          // touch
-          let touchStartXS = 0, touchStartPos = 0;
-          projMqStrip.addEventListener('touchstart', e => {
-            cancelAnimationFrame(momentumRAF);
-            clearTimeout(resumeTimeout);
-            mqPaused = true;
-            touchStartXS = e.touches[0].clientX;
-            touchStartPos = mqPos;
-            dragVel = 0; lastDragX = e.touches[0].clientX;
-          }, { passive: true });
-          projMqStrip.addEventListener('touchmove', e => {
-            dragVel = e.touches[0].clientX - lastDragX;
-            lastDragX = e.touches[0].clientX;
-            applyPos(touchStartPos + (e.touches[0].clientX - touchStartXS));
-          }, { passive: true });
-          projMqStrip.addEventListener('touchend', () => {
-            let vel = dragVel;
-            (function momentum() {
-              if (Math.abs(vel) < 0.3) {
-                resumeTimeout = window.setTimeout(() => { mqPaused = false; }, 800);
-                return;
-              }
-              applyPos(mqPos + vel);
-              vel *= 0.94;
-              momentumRAF = requestAnimationFrame(momentum);
-            })();
-          }, { passive: true });
-
-          // One large image; the name appears on hover, results sit quietly in a corner
-          const results = CASE_STUDIES[p.id]?.results || CARDS[p.id]?.results;
-          let html = `<a class="pv-hero" href="/case-studies/${p.slug}" aria-label="Open ${p.title} case study"><span class="pv-media">
-            <img src="${p.images[0]}" alt="${p.title}" draggable="false">`;
-          if (results) html += `<ul class="pv-stats">${results.map(([k, v]: [string, string]) => `<li><b>${v}</b><span>${k}</span></li>`).join('')}</ul>`;
-          html += `<div class="pv-hover"><span class="pv-name">${p.title}</span><span class="pv-cta">View case study →</span></div></span></a>`;
-          projContent.innerHTML = html;
-        }
-
-
-        function animateContentIn() {
-          projContent.querySelectorAll<HTMLElement>('.proj-section,.proj-divider').forEach(el => { const delay = +(el.dataset.delay || 0); setTimeout(() => el.classList.add('in'), delay + 200); });
-          setTimeout(() => { projContent.querySelectorAll<HTMLElement>('.proj-tag').forEach(el => { const delay = +(el.dataset.delay || 0); setTimeout(() => el.classList.add('in'), delay); }); }, 300);
-        }
-
-        function startMqLoop() {
-          cancelAnimationFrame(mqRAF);
-          (function loop() {
-            if (!mqPaused && mqFullW > 0) {
-              mqPos -= mqSpeed;
-              if (mqPos <= -mqFullW) mqPos += mqFullW;
-              projMqStrip.style.transform = `translateX(${mqPos}px)`;
-            }
-            mqRAF = requestAnimationFrame(loop);
-          })();
-        }
-
 
         function closeProject() {
-          cancelAnimationFrame(mqRAF); projectOpen = false;
+          projectOpen = false;
           gsap.to(projectView, {
             opacity: 0, duration: 0.4, ease: 'power2.in', onComplete: () => {
               projectView.classList.remove('show'); projectView.style.pointerEvents = 'none'; projectView.style.opacity = '';
@@ -762,7 +541,7 @@ export const usePortfolioAnimations = (container: React.RefObject<HTMLDivElement
             return; // grid scrolls natively — skip GL meshes + desktop zone logic entirely
           }
 
-          setTimeout(() => document.querySelectorAll<HTMLImageElement>('.photo img').forEach(img => createGLMesh(img)), 200);
+          // Card images are no longer redrawn on the WebGL layer: it sat above the cards and hid the result badge and hover title.
 
           // Desktop: social links sit centred under the hero image. Positioned rather
           // than moved in the DOM, since React owns the #social-links node.

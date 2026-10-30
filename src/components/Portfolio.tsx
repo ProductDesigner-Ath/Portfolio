@@ -1,5 +1,6 @@
 'use client';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 import Loader from './Loader';
 import Cursor from './Cursor';
@@ -11,12 +12,19 @@ import ProjectView from './ProjectView';
 import AboutOverlay from './AboutOverlay';
 
 import { usePortfolioAnimations } from '../hooks/usePortfolioAnimations';
+import { PHOTOS } from '../data/photos';
+import '../app/postcards.css';
 
 export default function Portfolio() {
   const container = useRef<HTMLDivElement>(null);
 
+  const router = useRouter();
+
+  // Case-study pages are prefetched so the click transition lands on a ready page
+  useEffect(() => { PHOTOS.forEach(p => router.prefetch(`/case-studies/${p.slug}`)); }, [router]);
+
   // Initialize all DOM-based animations and logic
-  usePortfolioAnimations(container);
+  usePortfolioAnimations(container, router.push);
 
   return (
     <div ref={container}>
